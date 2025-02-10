@@ -121,7 +121,7 @@ func login(c *gin.Context) {
 		Username: username,
 		Role:     role,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 2).Unix(), // 过期时间
+			ExpiresAt: time.Now().Add(time.Hour * 5).Unix(), // jwt-token过期时间
 			Issuer:    "yiiong",
 		},
 	}
@@ -164,10 +164,19 @@ func getUserInfoFromToken(c *gin.Context) {
 		utils.RespFail(c, "Role not found in context")
 		return
 	}
+
+	user, err := dao.SelectSingleUserInfo(username.(string))
+	if err != nil {
+		utils.RespFail(c, "Failed to find user!")
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status":   200,
 		"username": username,
 		"role":     role,
+		"email":    user.Email,
+		"phone":    user.Phone,
 	})
 }
 
@@ -180,7 +189,12 @@ func ChangeUserPassword(c *gin.Context) {
 		return
 	}
 
-	username := req.Username
+	username, ok := c.Get("username")
+	if !ok {
+		utils.RespFail(c, "Username not found in context")
+		return
+	}
+
 	oldPassword := req.Password
 	newPassword := req.NewPassword
 
@@ -189,7 +203,7 @@ func ChangeUserPassword(c *gin.Context) {
 		return
 	}
 
-	selectPassword, err := dao.SelectUserInfo(username, "Password")
+	selectPassword, err := dao.SelectUserInfo(username.(string), "Password")
 	if err != nil {
 		utils.RespFail(c, "Error retrieving password")
 		log.Println("Error retrieving password:", err)
@@ -200,6 +214,7 @@ func ChangeUserPassword(c *gin.Context) {
 		switch {
 		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
 			utils.RespFail(c, "Wrong password!")
+			return
 		default:
 			utils.RespFail(c, "error comparing password!")
 		}
@@ -210,7 +225,7 @@ func ChangeUserPassword(c *gin.Context) {
 		return
 	}
 
-	err = dao.UpdateUserPassword(username, newPassword)
+	err = dao.UpdateUserPassword(username.(string), newPassword)
 	if err != nil {
 		utils.RespFail(c, "Failed to update password!")
 		log.Println("Failed to update password:", err)

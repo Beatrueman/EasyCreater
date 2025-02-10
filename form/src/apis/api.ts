@@ -12,12 +12,6 @@ interface LoginData {
   password: string;
 }
 
-// 响应数据类型
-interface LoginResponse {
-  msg: string;
-  status: number;
-}
-
 export const Register = async (data: RegisterData) => {
   try {
     const response = await axiosInstance.post('/register', data, {
@@ -33,7 +27,6 @@ export const Register = async (data: RegisterData) => {
   }
 };
 
-// // 你还可以添加登录等其他 API 请求
 export const Login = async (data: LoginData) => {
   try {
     const response = await axiosInstance.post('/login', data, {
@@ -45,6 +38,66 @@ export const Login = async (data: LoginData) => {
     return response;
   } catch (error) {
     console.error('登录失败:', error);
+    throw error;
+  }
+};
+
+export const askAI = async (resumeData: string) => {
+  try {
+    const response = await axiosInstance.post("/user/ask", { resume_data: resumeData }, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("AI 优化建议:", response);
+    return response;
+  } catch (error) {
+    console.error("AI 请求失败:", error);
+    throw error;
+  }
+};
+
+export const askAIBase = async () => {
+  try {
+    const response = await axiosInstance.get("/user/ask_base", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("AI 优化建议:", response);
+    return response;
+  } catch (error) {
+    console.error("AI 请求失败:", error);
+    throw error;
+  }
+};
+
+export const changeUserPassword = async (form: { Password: string; newPassword: string }) => {
+  try {
+    const response = await axiosInstance.post("/user/change", form, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("修改密码失败:", error);
+    throw error; 
+  }
+};
+
+
+export const getUserInfo = async () => {
+  try {
+    const data = await axiosInstance.get("/user/info", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("获取用户信息成功!");
+    return data;
+  } catch (error) {
+    console.error("获取用户信息失败:", error);
     throw error;
   }
 };

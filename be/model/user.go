@@ -17,7 +17,6 @@ type User struct {
 }
 
 type ChangePasswordRequest struct {
-	Username    string `json:"username" binding:"required"`
 	Password    string `json:"password" binding:"required"`
 	NewPassword string `json:"newPassword" binding:"required"`
 }

@@ -24,9 +24,11 @@ func InitRouter() {
 	{
 		UserRouter.Use(middleware.JWTAuthMiddleware())
 		UserRouter.POST("/change", ChangeUserPassword)
-		UserRouter.GET("/get", getUserInfoFromToken) // 查询本用户信息（username和role）
+		UserRouter.GET("/info", getUserInfoFromToken) // 查询本用户信息（username和role）
 		UserRouter.POST("/:userId/content", PostContent)
 		UserRouter.GET("/:userId/content", GetContent)
+		UserRouter.POST("/ask", QWenNormalChat)
+		UserRouter.GET("/ask_base", QWenNormalChatBase)
 	}
 	r.Run(":8888")
 }

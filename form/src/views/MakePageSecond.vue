@@ -28,14 +28,14 @@
                     <div>
                         <ColorInput 
                         label="背景颜色" 
-                        :default-color="colors.left.background"
-                        @color-changed="colors.left.background = $event" />
+                        
+                        @color-changed="colors.right.background = $event" />
                     </div>
                     
                     <div><ColorInput 
                         label="文本颜色" 
-                        :default-color="colors.left.text"
-                        @color-changed="colors.left.text = $event" />
+                        :default-color="colors.right.text"
+                        @color-changed="colors.right.text = $event" />
                     </div>
 
                     <div style="color: black;">
@@ -43,8 +43,8 @@
                             label="左列宽度控制"
                             :min="20"
                             :max="80"
-                            :current-value="widthLeft"
-                            @percentage-changed="widthLeft = $event"
+                            :current-value="widthRight"
+                            @percentage-changed="widthRight = $event"
                             />
                     </div>
                 <div style="color: black; font-weight: bolder">右列</div>
@@ -57,13 +57,13 @@
                     <div>
                         <ColorInput 
                         label="背景颜色" 
-                        @color-changed="colors.right.background = $event" />
+                        :default-color="colors.left.background"
+                        @color-changed="colors.left.background = $event" />
                     </div>
                     
                     <div><ColorInput 
                         label="文本颜色" 
-                        :default-color="colors.right.text"
-                        @color-changed="colors.right.text = $event" />
+                        @color-changed="colors.left.text = $event" />
                     </div>
 
                     <div style="color: black;">
@@ -105,67 +105,17 @@
             <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
             <CustomButton btn-type="primary" 
                         style="margin-bottom: 20px; margin-top: 0px;"
-                        @click="saveConfig('template1')"
+                        @click="saveConfig('template2')"
                         >保存简历</CustomButton>
             <AiPolish :fromTemplate="fromTemplate" />
-
-            </div>
-
+        </div>
             <div 
                 id="resume"
                 class="d-flex" 
                 :class="{ 'edit-off': !editing, 'letter-format': resumeFormat == 'letter' }"
                 :style="cssVariables"
                 >
-                <div class="left-col" :style="{width: percentageWidthLeft}">
-                    <div class="resume-section">
-                        <img :src="imgUrl"
-                            v-if="showImage"
-                            class="profile-pic" 
-                            alt="profile picture"
-                            :class="{'circle': imageShape == 'circle'}"
-                            >
-                        
-                        <SectionHeadline :editing="editing" :headline="headlines[0]" @headline-edited="updateHeadline($event, 0)"/>
-                        
-                        <div 
-                            :contenteditable="editing" 
-                            @input="updateProperty($event, 'introText')">
-                            {{ introText }}
-                        </div>
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[1]" @headline-edited="updateHeadline($event, 1)"/>
-                        
-                        <Contact :editing="editing" :contact="contact" @edit="updateNestedProperty"/>
-                        
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
-                        <ul>
-                            <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
-                        </ul>
-                        <EditButtons
-                            :editing="editing"  
-                            @add-click="skills.push('编辑项')" 
-                            @remove-click="skills.pop()"
-                            :show-remove-button="skills.length > 0"
-                        />
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
-                        <ul>
-                            <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
-                        </ul>
-                        <EditButtons 
-                            :editing="editing"
-                            @add-click="honor.push('编辑项')" 
-                            @remove-click="honor.pop()"
-                            :show-remove-button="honor.length > 0"
-                        />
-                    </div>
-                </div>
-                <div class="right-col">
+                <div class="left-col">
                     <div 
                         class="name"
                         :contenteditable="editing" 
@@ -275,6 +225,54 @@
                         </div>
                     </div>
                 </div>
+                <div class="right-col" :style="{width: percentageWidthRight}">                    
+                    <div class="resume-section">
+                        <img :src="imgUrl"
+                            v-if="showImage"
+                            class="profile-pic" 
+                            alt="profile picture"
+                            :class="{'circle': imageShape == 'circle'}"
+                            >
+                        
+                        <SectionHeadline :editing="editing" :headline="headlines[0]" @headline-edited="updateHeadline($event, 0)"/>
+                        
+                        <div 
+                            :contenteditable="editing" 
+                            @input="updateProperty($event, 'introText')">
+                            {{ introText }}
+                        </div>
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[1]" @headline-edited="updateHeadline($event, 1)"/>
+                        
+                        <Contact :editing="editing" :contact="contact" @edit="updateNestedProperty"/>
+                        
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
+                        <ul>
+                            <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
+                        </ul>
+                        <EditButtons
+                            :editing="editing"  
+                            @add-click="skills.push('编辑项')" 
+                            @remove-click="skills.pop()"
+                            :show-remove-button="skills.length > 0"
+                        />
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
+                        <ul>
+                            <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
+                        </ul>
+                        <EditButtons 
+                            :editing="editing"
+                            @add-click="honor.push('编辑项')" 
+                            @remove-click="honor.pop()"
+                            :show-remove-button="honor.length > 0"
+                        />
+                    </div>
+                </div>
             </div>
     </main>
 </template>
@@ -295,9 +293,9 @@
 
   :root {
     --highlight-color-left: #82C0CC;
-    --background-color-left: #3943B7;
+    --background-color-left: #e0e0e0;
     --text-color-left: white;
-    --highlight-color-right: #3943B7;
+    --highlight-color-right: #82C0CC;
     --background-color-right: white;
     --text-color-right: black;
     --headline-weight: 600;
@@ -313,14 +311,14 @@ body {
     max-width: 1200px;
 }
 
-.left-col {
+.right-col {
     background-color: var(--background-color-left);
     color: var(--text-color-left);
     border-right: 1px sold var(--highlight-color-left);
     padding: 30px;
 }
 
-.right-col {
+.left-col {
     background: var(--background-color-right);
     color: var(--text-color-right);
     width: 70%;
@@ -353,8 +351,8 @@ body {
 
 .name {
     font-size: 28px;
-    color: var(--highlight-color-right);
-    border-bottom: 1px solid var(--highlight-color-right);
+    color: var(--highlight-color-left);
+    border-bottom: 1px solid var(--highlight-color-left);
     margin: 0;
     margin-left: -30px;
     padding-left: 30px;
@@ -389,7 +387,7 @@ body {
     display: block;
     width: 160px;
     height: 160px;
-    border: 5px solid var(--highlight-color-left);
+    border: 5px solid var(--highlight-color-right);
     margin-bottom: 20px;
     object-fit: cover;
     margin-left: auto;
@@ -435,13 +433,6 @@ body {
     width: 8.5in;
     height: 11in;
 }
-
-.response-text {
-  white-space: pre-line; /* 保证换行 */
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-}
-
 </style>
 
 <script>
@@ -473,7 +464,7 @@ export default {
                     if (resume.fromTemplate === this.templateName) {
                         this.loadIntoData(resume);
                     } else {
-                        console.warn(`数据来自 ${resume.fromTemplate}，不匹配当前模板 ${this.templateName}`);
+                        console.warn(`数据来自 ${resume.fromTemplate}，不匹配当前模板 ${templateName}`);
                     }
                 } catch (error) {
                     console.error("Error parsing saved resume configuration: ", error);
@@ -491,18 +482,19 @@ export default {
         SelectInput,
         ImageUpload,
         ExportPdf,
-        CustomButton
+        CustomButton,
+        AiPolish
     },
     data() {
         return {
             colors: {
                 left: {
                     highlight: '#82C0CC',
-                    text: 'white',
-                    background: '#3943B7'
+                    text: 'black',
+                    background: '#F9DF7A'
                 },
                 right: {
-                    highlight: '#3943B7',
+                    highlight: '#303030',
                     text: 'black',
                     background: 'white'
                 },
@@ -574,13 +566,12 @@ export default {
             }],
             editing: false,
             showImage: true,
-            drawer: false,
-            widthLeft: 30,
+            widthRight: 30,
             imageShape: "circle",
             headlineWeight: "400",
             resumeFormat: 'a4',
-            templateName: "template1",
-            fromTemplate: "template1",
+            templateName: "template2",
+            fromTemplate: "template2",
             aiResponse: "",    // AI 返回的数据
             loading: false     // 加载状态
         }
@@ -598,8 +589,8 @@ export default {
                 '--headline-weight': this.headlineWeight,
             }
         },
-        percentageWidthLeft() {
-            return this.widthLeft + '%';
+        percentageWidthRight() {
+            return this.widthRight + '%';
         }  
     },
     methods: {
@@ -682,7 +673,6 @@ export default {
         goToTemplate() {
             this.$router.push('/home/template');
         },
-    
     },
 }
 </script>

@@ -7,7 +7,7 @@
           <img src="../assets/logo.svg" class="logo">  
           <el-text class="title" size="small">EasyCreater</el-text>
         </el-col>
-        <el-col :span="16"><div class="grid-content ep-bg-purple" />part2</el-col>
+        <el-col :span="16"><div class="grid-content ep-bg-purple" /></el-col>
         <el-col :span="4"><div class="grid-content ep-bg-purple" />
           <div class="block">
           <el-avatar shape="square" :size="50" :src="squareUrl" />
@@ -19,6 +19,8 @@
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item divided @click="goToAbout">个人中心</el-dropdown-item>
+      </el-dropdown-menu>
+      <el-dropdown-menu>
         <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -34,11 +36,11 @@
         default-active="2"
         class="el-menu-vertical-demo"
       >
-      <el-menu-item index="1" @click="goToHome">
+      <el-menu-item index="1" @click="goToIndex">
           <el-icon><setting /></el-icon>
           <span>首页</span>
         </el-menu-item>
-        <el-menu-item index="2" @click="goToMake">
+        <el-menu-item index="2" @click="goToTemplate">
           <el-icon><setting /></el-icon>
           <span>新建简历</span>
         </el-menu-item>
@@ -52,20 +54,12 @@
         </el-sub-menu>
         <el-menu-item index="4">
           <el-icon><location /></el-icon>
-          <span>简历模板</span>
-        </el-menu-item>
-        <el-menu-item index="5">
-          <el-icon><location /></el-icon>
           <span>简历广场</span>
-        </el-menu-item>
-        <el-menu-item index="6">
-          <el-icon><location /></el-icon>
-          <span>经验分享</span>
         </el-menu-item>
       </el-menu>
         </el-aside>
         <el-container>
-          <el-main>
+          <el-main style="line-height: 30px; text-align: left">
             <router-view />
           </el-main>
           <el-footer>
@@ -83,7 +77,6 @@
   padding: 10px;
 }
 
-@import "../style/common.scss";
 .common-layout {
   height: 100%;
   width: 100%;
@@ -198,19 +191,25 @@ const { circleUrl, squareUrl, sizeList } = toRefs(state)
 
 const logout = () => {
   localStorage.removeItem('jwt-token');
+  localStorage.removeItem('resume');
   username.value = null;
   router.push('/');
 }
 
-const goToAbout = () => {
-  router.push('/home/about');  
+const goToTemplate = () => {
+  router.push('/home/template');  
 };
 
 const goToHome = () => {
   router.push('/home'); 
 };
 
-const goToMake = () => {
-  router.push('/home/make'); 
+const goToAbout = () => {
+  router.push('/home/about'); 
 };
+
+const goToIndex = () => {
+  router.push('/home/index'); 
+};
+
 </script>

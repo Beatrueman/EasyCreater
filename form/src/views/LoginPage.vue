@@ -108,7 +108,7 @@ const submitForm = async () => {
 
       setTimeout(() => {
         // 跳转到首页
-        router.push('/home');
+        router.push('/home/index');
       }, 2000);
     }
   } catch (error) {
