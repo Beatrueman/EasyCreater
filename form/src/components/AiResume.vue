@@ -6,7 +6,7 @@
     @click="openDrawer"
     :loading="loading"
     >
-    <el-icon><MagicStick /></el-icon> 问问AI怎么写
+    <el-icon><MagicStick /></el-icon> {{ btn_text}}
     </el-button>
   
     <el-drawer v-model="drawer" title="AI优化建议" :with-header="false" size="40%">
@@ -16,7 +16,7 @@
       </div>
     </el-drawer>
   </template>
-  
+
   <script>
   import { ref, defineComponent } from "vue";
   import { ElMessage } from "element-plus";
@@ -26,7 +26,18 @@
   
   export default defineComponent({
     components: { MagicStick },
-    setup() {
+    props: {
+      resume_data: {
+        type: String,
+        required: true,
+      },
+      btn_text: {
+        type: String,
+        required: true,
+      },
+    },
+
+    setup(props) {
       const aiResponse = ref("");
       const loading = ref(false);
       const drawer = ref(false);
@@ -37,7 +48,7 @@
         drawer.value = true;
   
         try {
-          const response = await askAIBase();
+          const response = await askAIBase(props.resume_data);
           
           if (!response) {
             throw new Error("API 返回数据为空");

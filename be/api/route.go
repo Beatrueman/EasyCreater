@@ -28,7 +28,7 @@ func InitRouter() {
 		UserRouter.POST("/:userId/content", PostContent)
 		UserRouter.GET("/:userId/content", GetContent)
 		UserRouter.POST("/ask", QWenNormalChat)
-		UserRouter.GET("/ask_base", QWenNormalChatBase)
+		UserRouter.POST("/ask_base", QWenNormalChatBase)
 	}
 	r.Run(":8888")
 }
