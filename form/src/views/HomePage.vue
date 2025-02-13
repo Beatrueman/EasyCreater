@@ -44,14 +44,12 @@
           <el-icon><setting /></el-icon>
           <span>新建简历</span>
         </el-menu-item>
-        <el-sub-menu index="3">
+        <el-menu-item index="3" @click="goToMyResume">
           <template #title>
             <el-icon><location /></el-icon>
             <span>我的简历</span>
           </template>
-            <el-menu-item index="3-1">我创建的</el-menu-item>
-            <el-menu-item index="3-2">我收藏的</el-menu-item>
-        </el-sub-menu>
+        </el-menu-item>
         <el-menu-item index="4">
           <el-icon><location /></el-icon>
           <span>简历广场</span>
@@ -210,6 +208,10 @@ const goToAbout = () => {
 
 const goToIndex = () => {
   router.push('/home/index'); 
+};
+
+const goToMyResume = () => {
+  router.push('/home/my_resume'); 
 };
 
 </script>

@@ -23,6 +23,7 @@ func QWenNormalChat(c *gin.Context) {
 
 	var req ResumeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println("error binding JSON:", req)
 		utils.RespFail(c, "Invalid JSON")
 		return
 	}
@@ -49,8 +50,6 @@ func QWenNormalChat(c *gin.Context) {
 		return
 	}
 
-	//fmt.Printf("resp: %+v\n", resp)
-
 	// 返回建议
 	c.JSON(http.StatusOK, AIResponse{
 		Reply:     resp.Content,
@@ -60,6 +59,12 @@ func QWenNormalChat(c *gin.Context) {
 }
 
 func QWenNormalChatBase(c *gin.Context) {
+
+	var req ResumeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.RespFail(c, "Invalid JSON")
+		return
+	}
 
 	globalParams := new(easyai.QWenParameters)
 	globalParams.Input = &easyai.QWenInputMessages{}
@@ -72,11 +77,19 @@ func QWenNormalChatBase(c *gin.Context) {
 		"max_tokens":  1500,
 	}
 
+	Question := req.ResumeData
+	if Question == "" {
+		Question = "我是一个准备求职的大学生，现在需要写简历，但是我不会写，你能给我提出一些建议吗?"
+	} else {
+		Question = Question + "这是我目前的个人信息，请帮我生成一份简历建议。"
+	}
+
+	log.Printf(Question)
 	config := easyllm.DefaultConfig("sk-70afc0771fc44f01a42ed73e983a6547", easyai.ChatTypeQWen)
 	client := easyllm.NewChatClient(config).SetGlobalParams(globalParams)
 	resp, reply, err := client.NormalChat(context.Background(), &easyai.ChatRequest{
 		Model:   easyai.ChatModelQWenTurbo,
-		Message: "我是一个准备求职的大学生，现在需要写简历，但是我不会写，你能给我提出一些建议吗",
+		Message: Question,
 	})
 	if err != nil {
 		log.Println("Error sending chat request:", err)
