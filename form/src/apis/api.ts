@@ -1,4 +1,5 @@
 import axiosInstance from '../utils/axios';
+import { defineComponent } from 'vue';
 
 interface RegisterData {
   username: string;
@@ -57,9 +58,9 @@ export const askAI = async (resumeData: string) => {
   }
 };
 
-export const askAIBase = async () => {
+export const askAIBase = async (resumeData: string) => {
   try {
-    const response = await axiosInstance.get("/user/ask_base", {
+    const response = await axiosInstance.post("/user/ask_base", { resume_data: resumeData }, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -98,6 +99,26 @@ export const getUserInfo = async () => {
     return data;
   } catch (error) {
     console.error("获取用户信息失败:", error);
+    throw error;
+  }
+};
+
+export const getTemplateData = async (templateId: Number) => {
+  try {
+    const response = await axiosInstance.get(`/user/template/${templateId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const { template, style, script } = response.data.data;
+    console.log("获取模板数据成功!");
+    return defineComponent({
+      template,
+      style,
+      script,
+    });
+  } catch (error) {
+    console.error("获取模板数据失败:", error);
     throw error;
   }
 };

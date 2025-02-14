@@ -31,6 +31,7 @@ func InitRouter() {
 		UserRouter.POST("/ask", QWenNormalChat)
 		UserRouter.GET("/ask_base", QWenNormalChatBase)
 		UserRouter.GET("/getTemplate/:template_id", GetTemplateFromId)
+
 	}
 	r.Run(":8888")
 }

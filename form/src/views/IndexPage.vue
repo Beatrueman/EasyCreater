@@ -12,7 +12,7 @@
                     
             </div>
             <div class="ask-ai">
-                <AiResume />
+                <AiResume :btn_text = "'问问AI怎么写'"/>
             </div>
             <div class="section">
                 <h4>刷题导航</h4>
