@@ -37,8 +37,30 @@ func InitMySQL() {
 	user := viper.GetString("MySQL.user")
 	password := viper.GetString("MySQL.password")
 
-	// 构建 DSN
+	// 查询所有数据库的信息
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		user, password, host, port, "information_schema")
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("failed to connect database server: %v", err)
+	}
+
+	// 检查配置文件中的数据库 是否存在
+	var count int64
+	db.Raw("SELECT COUNT(SCHEMA_NAME) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", database).Scan(&count)
+	if count == 0 {
+		// 如果数据库不存在，则创建
+		err = db.Exec("CREATE DATABASE " + database).Error
+		if err != nil {
+			log.Fatalf("failed to create database: %v", err)
+		}
+		log.Printf("Database '%s' created successfully.", database)
+	} else {
+		log.Printf("Database '%s' already exists.", database)
+	}
+
+	// 构建 dsn
+	dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		user, password, host, port, database)
 
 	// 连接 MySQL
@@ -50,7 +72,7 @@ func InitMySQL() {
 	log.Println("MySQL connected successfully!")
 
 	// 自动迁移
-	err = db.AutoMigrate(&model.User{}, &model.Content{})
+	err = db.AutoMigrate(&model.User{}, &model.Content{}, &model.ResumeTemplate{})
 	if err != nil {
 		log.Fatalf("Error creating tables: %v", err)
 	}
@@ -65,6 +87,12 @@ func InitMySQL() {
 	err = AddUser(username, password, email, phone, "admin")
 	if err != nil {
 		log.Fatalf("Error adding admin user: %v", err)
+	}
+
+	// 获取并初始化 添加 两个现有 简历模板
+	err = ProcessVueFiles("F:\\GitLocalReos\\EasyCreater\\form\\src\\views\\pages")
+	if err != nil {
+		log.Fatalf("Error processing views: %v", err)
 	}
 }
 

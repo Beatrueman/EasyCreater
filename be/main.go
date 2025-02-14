@@ -7,6 +7,6 @@ import (
 
 func main() {
 	dao.InitMySQL()
-	dao.InitRedis()
+	//dao.InitRedis()
 	api.InitRouter()
 }

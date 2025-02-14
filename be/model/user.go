@@ -16,6 +16,20 @@ type User struct {
 	Contents []Content `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
 }
 
+type Data struct {
+	DataTemplate string `gorm:"column:data_template;not null" form:"data_template" json:"data_template"`
+	DataStyle    string `gorm:"column:data_style;not null" form:"data_style" json:"data_style"`
+	DataScript   string `gorm:"column:data_script;not null" form:"data_script" json:"data_script"`
+}
+
+type ResumeTemplate struct {
+	TemplateId   int    `gorm:"column:template_id;primaryKey;autoIncrement" json:"template_id"`
+	Name         string `gorm:"column:name;not null" form:"name" json:"name"`
+	DataTemplate string `gorm:"column:data_template;not null" form:"data_template" json:"data_template"`
+	DataStyle    string `gorm:"column:data_style;not null" form:"data_style" json:"data_style"`
+	DataScript   string `gorm:"column:data_script;not null" form:"data_script" json:"data_script"`
+}
+
 type ChangePasswordRequest struct {
 	Password    string `json:"password" binding:"required"`
 	NewPassword string `json:"newPassword" binding:"required"`

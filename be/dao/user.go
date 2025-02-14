@@ -23,6 +23,7 @@ func hashPassword(password string) (string, error) {
 }
 
 // 验证password
+
 func CheckPasswordHash(password, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(password), []byte(hash))
 }

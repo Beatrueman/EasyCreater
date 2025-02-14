@@ -18,6 +18,7 @@ func InitRouter() {
 		AdminRouter.GET("/search", getAllUserInfo)
 		AdminRouter.DELETE("/delete/:userId", deleteUser)
 		AdminRouter.POST("/role/:userId", ChangeUserRole)
+		AdminRouter.POST("/saveTemplate", SaveTemplate)
 	}
 
 	UserRouter := r.Group("/user")
@@ -29,6 +30,7 @@ func InitRouter() {
 		UserRouter.GET("/:userId/content", GetContent)
 		UserRouter.POST("/ask", QWenNormalChat)
 		UserRouter.GET("/ask_base", QWenNormalChatBase)
+		UserRouter.GET("/getTemplate/:template_id", GetTemplateFromId)
 	}
 	r.Run(":8888")
 }
