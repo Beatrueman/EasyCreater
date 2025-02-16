@@ -28,14 +28,14 @@
                     <div>
                         <ColorInput 
                         label="背景颜色" 
-                        
-                        @color-changed="colors.right.background = $event" />
+                        :default-color="colors.left.background"
+                        @color-changed="colors.left.background = $event" />
                     </div>
                     
                     <div><ColorInput 
                         label="文本颜色" 
-                        :default-color="colors.right.text"
-                        @color-changed="colors.right.text = $event" />
+                        :default-color="colors.left.text"
+                        @color-changed="colors.left.text = $event" />
                     </div>
 
                     <div style="color: black;">
@@ -43,8 +43,8 @@
                             label="左列宽度控制"
                             :min="20"
                             :max="80"
-                            :current-value="widthRight"
-                            @percentage-changed="widthRight = $event"
+                            :current-value="widthLeft"
+                            @percentage-changed="widthLeft = $event"
                             />
                     </div>
                 <div style="color: black; font-weight: bolder">右列</div>
@@ -57,13 +57,13 @@
                     <div>
                         <ColorInput 
                         label="背景颜色" 
-                        :default-color="colors.left.background"
-                        @color-changed="colors.left.background = $event" />
+                        @color-changed="colors.right.background = $event" />
                     </div>
                     
                     <div><ColorInput 
                         label="文本颜色" 
-                        @color-changed="colors.left.text = $event" />
+                        :default-color="colors.right.text"
+                        @color-changed="colors.right.text = $event" />
                     </div>
 
                     <div style="color: black;">
@@ -105,17 +105,67 @@
             <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
             <CustomButton btn-type="primary" 
                         style="margin-bottom: 20px; margin-top: 0px;"
-                        @click="saveConfig()"
+                        @click="saveConfig('template1')"
                         >保存简历</CustomButton>
             <AiPolish :fromTemplate="fromTemplate" />
-        </div>
+
+            </div>
+
             <div 
                 id="resume"
                 class="d-flex" 
                 :class="{ 'edit-off': !editing, 'letter-format': resumeFormat == 'letter' }"
                 :style="cssVariables"
                 >
-                <div class="left-col">
+                <div class="left-col" :style="{width: percentageWidthLeft}">
+                    <div class="resume-section">
+                        <img :src="imgUrl"
+                            v-if="showImage"
+                            class="profile-pic" 
+                            alt="profile picture"
+                            :class="{'circle': imageShape == 'circle'}"
+                            >
+                        
+                        <SectionHeadline :editing="editing" :headline="headlines[0]" @headline-edited="updateHeadline($event, 0)"/>
+                        
+                        <div 
+                            :contenteditable="editing" 
+                            @input="updateProperty($event, 'introText')">
+                            {{ introText }}
+                        </div>
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[1]" @headline-edited="updateHeadline($event, 1)"/>
+                        
+                        <Contact :editing="editing" :contact="contact" @edit="updateNestedProperty"/>
+                        
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
+                        <ul>
+                            <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
+                        </ul>
+                        <EditButtons
+                            :editing="editing"  
+                            @add-click="skills.push('编辑项')" 
+                            @remove-click="skills.pop()"
+                            :show-remove-button="skills.length > 0"
+                        />
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
+                        <ul>
+                            <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
+                        </ul>
+                        <EditButtons 
+                            :editing="editing"
+                            @add-click="honor.push('编辑项')" 
+                            @remove-click="honor.pop()"
+                            :show-remove-button="honor.length > 0"
+                        />
+                    </div>
+                </div>
+                <div class="right-col">
                     <div 
                         class="name"
                         :contenteditable="editing" 
@@ -225,54 +275,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="right-col" :style="{width: percentageWidthRight}">                    
-                    <div class="resume-section">
-                        <img :src="imgUrl"
-                            v-if="showImage"
-                            class="profile-pic" 
-                            alt="profile picture"
-                            :class="{'circle': imageShape == 'circle'}"
-                            >
-                        
-                        <SectionHeadline :editing="editing" :headline="headlines[0]" @headline-edited="updateHeadline($event, 0)"/>
-                        
-                        <div 
-                            :contenteditable="editing" 
-                            @input="updateProperty($event, 'introText')">
-                            {{ introText }}
-                        </div>
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[1]" @headline-edited="updateHeadline($event, 1)"/>
-                        
-                        <Contact :editing="editing" :contact="contact" @edit="updateNestedProperty"/>
-                        
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
-                        <ul>
-                            <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
-                        </ul>
-                        <EditButtons
-                            :editing="editing"  
-                            @add-click="skills.push('编辑项')" 
-                            @remove-click="skills.pop()"
-                            :show-remove-button="skills.length > 0"
-                        />
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
-                        <ul>
-                            <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
-                        </ul>
-                        <EditButtons 
-                            :editing="editing"
-                            @add-click="honor.push('编辑项')" 
-                            @remove-click="honor.pop()"
-                            :show-remove-button="honor.length > 0"
-                        />
-                    </div>
-                </div>
             </div>
     </main>
 </template>
@@ -293,9 +295,9 @@
 
   :root {
     --highlight-color-left: #82C0CC;
-    --background-color-left: #e0e0e0;
+    --background-color-left: #3943B7;
     --text-color-left: white;
-    --highlight-color-right: #82C0CC;
+    --highlight-color-right: #3943B7;
     --background-color-right: white;
     --text-color-right: black;
     --headline-weight: 600;
@@ -311,14 +313,14 @@ body {
     max-width: 1200px;
 }
 
-.right-col {
+.left-col {
     background-color: var(--background-color-left);
     color: var(--text-color-left);
     border-right: 1px sold var(--highlight-color-left);
     padding: 30px;
 }
 
-.left-col {
+.right-col {
     background: var(--background-color-right);
     color: var(--text-color-right);
     width: 70%;
@@ -351,8 +353,8 @@ body {
 
 .name {
     font-size: 28px;
-    color: var(--highlight-color-left);
-    border-bottom: 1px solid var(--highlight-color-left);
+    color: var(--highlight-color-right);
+    border-bottom: 1px solid var(--highlight-color-right);
     margin: 0;
     margin-left: -30px;
     padding-left: 30px;
@@ -387,7 +389,7 @@ body {
     display: block;
     width: 160px;
     height: 160px;
-    border: 5px solid var(--highlight-color-right);
+    border: 5px solid var(--highlight-color-left);
     margin-bottom: 20px;
     object-fit: cover;
     margin-left: auto;
@@ -433,6 +435,13 @@ body {
     width: 8.5in;
     height: 11in;
 }
+
+.response-text {
+  white-space: pre-line; /* 保证换行 */
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
 </style>
 
 <script>
@@ -451,21 +460,12 @@ import ExportPdf from '../../components/ExportPdf.vue';
 import CustomButton from '../../components/CustomButton.vue';
 import { useRouter } from 'vue-router';
 import AiPolish from '../../components/AiPolish.vue';
-import { fetchResume, saveResume } from '../../apis/api';
 
 const router = useRouter();
 
 export default {
     created() {
-        const resumeIdStr = this.$route.query.resume_id
-        this.resumeId = resumeIdStr ? Number(resumeIdStr) : null;
-
-        if(this.resumeId) {
-            console.log("从数据库加载简历",this.resumeId);
-            this.loadFromDatabase(this.resumeId)
-        } else {
-            console.log("从 localStorage 加载简历");
-            const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
+        const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
             if (savedResume) {
                 try {
                     const resume = JSON.parse(savedResume);
@@ -479,7 +479,6 @@ export default {
                     console.error("Error parsing saved resume configuration: ", error);
                 }
             }
-        }
     },
     components: {
         SectionHeadline,
@@ -492,19 +491,18 @@ export default {
         SelectInput,
         ImageUpload,
         ExportPdf,
-        CustomButton,
-        AiPolish
+        CustomButton
     },
     data() {
         return {
             colors: {
                 left: {
                     highlight: '#82C0CC',
-                    text: 'black',
-                    background: '#F9DF7A'
+                    text: 'white',
+                    background: '#3943B7'
                 },
                 right: {
-                    highlight: '#303030',
+                    highlight: '#3943B7',
                     text: 'black',
                     background: 'white'
                 },
@@ -576,15 +574,15 @@ export default {
             }],
             editing: false,
             showImage: true,
-            widthRight: 30,
+            drawer: false,
+            widthLeft: 30,
             imageShape: "circle",
             headlineWeight: "400",
             resumeFormat: 'a4',
-            templateName: "template2",
-            fromTemplate: "template2",
+            templateName: "template1",
+            fromTemplate: "template1",
             aiResponse: "",    // AI 返回的数据
-            loading: false,
-            resumeId: null,     
+            loading: false     // 加载状态
         }
     },
 
@@ -600,8 +598,8 @@ export default {
                 '--headline-weight': this.headlineWeight,
             }
         },
-        percentageWidthRight() {
-            return this.widthRight + '%';
+        percentageWidthLeft() {
+            return this.widthLeft + '%';
         }  
     },
     methods: {
@@ -669,16 +667,9 @@ export default {
         toggleImageDisplay(value) {
             this.showImage = value;
         },
-        async saveConfig() {
-            const resumeData = JSON.stringify(this.$data)
-            localStorage.setItem(`resume_${this.fromTemplate}`, resumeData);
-
-            try {
-                await saveResume(this.$data);
-                console.log('保存成功');
-            } catch (error) {
-                console.error('保存失败:', error);
-            }
+        saveConfig(templateName) {
+            this.fromTemplate = templateName;
+            localStorage.setItem(`resume_${this.fromTemplate}`, JSON.stringify(this.$data))
         },
 
         loadIntoData(config) {
@@ -688,27 +679,10 @@ export default {
                 }
             }
         },
-
-        async loadFromDatabase(resumeId) {
-            console.log(`正在从数据库加载简历 ID: ${resumeId}`);
-            try {
-                const resume = await fetchResume(resumeId);
-                if(resume) {
-                    const parsedData = JSON.parse(resume[0].resume_data);
-                    console.log(resume[0].resume_data)
-                    this.loadIntoData(parsedData);
-                    
-                    console.log('加载成功');
-                } else {
-                    console.log('简历不存在');
-                }
-            } catch (error) {
-                console.error(`加载简历 ID ${resumeId} 失败:`, error);
-            }
-        },
         goToTemplate() {
             this.$router.push('/home/template');
         },
+    
     },
 }
 </script>

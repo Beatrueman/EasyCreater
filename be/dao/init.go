@@ -72,7 +72,7 @@ func InitMySQL() {
 	log.Println("MySQL connected successfully!")
 
 	// 自动迁移
-	err = db.AutoMigrate(&model.User{}, &model.Content{}, &model.ResumeTemplate{})
+	err = db.AutoMigrate(&model.User{}, &model.Content{}, &model.ResumeData{})
 	if err != nil {
 		log.Fatalf("Error creating tables: %v", err)
 	}
@@ -83,17 +83,28 @@ func InitMySQL() {
 	phone := viper.GetString("phone")
 	email := viper.GetString("email")
 
-	// 添加管理员账户
-	err = AddUser(username, password, email, phone, "admin")
+	// 检查admin ，添加管理员账户
+	var Count int64
+	err = db.Raw("SELECT COUNT(*) FROM users WHERE username = ?", "admin").Scan(&Count).Error
 	if err != nil {
-		log.Fatalf("Error adding admin user: %v", err)
+		log.Fatalf("Error selecting admin user: %v", err)
+	}
+
+	if Count == 0 {
+		log.Println("admin user not found, adding admin user...")
+		err = AddUser(username, password, email, phone, "admin")
+		if err != nil {
+			log.Fatalf("Error adding admin user: %v", err)
+		}
+	} else {
+		log.Println("Admin user already exists, no need to add.")
 	}
 
 	// 获取并初始化 添加 两个现有 简历模板
-	err = ProcessVueFiles("F:\\GitLocalReos\\EasyCreater\\form\\src\\views\\pages")
-	if err != nil {
-		log.Fatalf("Error processing views: %v", err)
-	}
+	//err = ProcessVueFiles("dao/templates")
+	//if err != nil {
+	//	log.Fatalf("Error processing views: %v", err)
+	//}
 }
 
 func InitRedis() {

@@ -173,6 +173,16 @@ func SelectAllUserInfo() ([]model.User, error) {
 	return users, nil
 }
 
+func SelectUsernameFromId(id uint64) (string, error) {
+	var user model.User
+	res := db.Where("id = ?", id).First(&user)
+	if res.Error != nil {
+		log.Printf("error select user: %v", res.Error)
+		return "", res.Error
+	}
+	return user.Username, nil
+}
+
 func SelectSingleUserInfo(username string) (model.User, error) {
 	var user model.User
 	res := db.Where("username = ?", username).First(&user)

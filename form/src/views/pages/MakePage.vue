@@ -1,281 +1,283 @@
 <template>
     <main class="container">
-        <SideBar>
-            <ToggleSwitch 
-            :toggle-active="editing"
-            @switch-toggled="toggleEditMode" 
-            label="编辑模式" 
-            :defaultValue="false"/>   
-            <div>
-                <ExportPdf v-if="!editing" :resume-format="resumeFormat"/>
-            </div>
-            <div>
-                <span style="color: black;">简历格式</span>
-                <SelectInput 
-                    :options="[{'name':'a4', 'value':'a4'}, {'name':'信件', 'value':'letter'}]"
-                    :default-option="resumeFormat"
-                    @update-selection="resumeFormat = $event"
-                />
-            </div>
-            <div v-if="editing">
-                <div style="color: black; font-weight: bolder">左列</div>
-                    <div><ColorInput 
-                        label="标题颜色" 
-                        :default-color="colors.left.highlight"
-                        @color-changed="colors.left.highlight = $event" />
-                    </div>
-
-                    <div>
-                        <ColorInput 
-                        label="背景颜色" 
-                        :default-color="colors.left.background"
-                        @color-changed="colors.left.background = $event" />
-                    </div>
-                    
-                    <div><ColorInput 
-                        label="文本颜色" 
-                        :default-color="colors.left.text"
-                        @color-changed="colors.left.text = $event" />
-                    </div>
-
-                    <div style="color: black;">
-                        <PercentageInput 
-                            label="左列宽度控制"
-                            :min="20"
-                            :max="80"
-                            :current-value="widthLeft"
-                            @percentage-changed="widthLeft = $event"
-                            />
-                    </div>
-                <div style="color: black; font-weight: bolder">右列</div>
-                    <div><ColorInput 
-                        label="标题颜色" 
-                        :default-color="colors.right.highlight"
-                        @color-changed="colors.right.highlight = $event" />
-                    </div>
-
-                    <div>
-                        <ColorInput 
-                        label="背景颜色" 
-                        @color-changed="colors.right.background = $event" />
-                    </div>
-                    
-                    <div><ColorInput 
-                        label="文本颜色" 
-                        :default-color="colors.right.text"
-                        @color-changed="colors.right.text = $event" />
-                    </div>
-
-                    <div style="color: black;">
-                        <span>标题粗细</span>
-                        <SelectInput 
-                        @update-selection="headlineWeight = $event"
-                        :default-option="headlineWeight"
-                        :options="[{'name': '细', 'value': '300'}, {'name': '正常', 'value': '400'}, {'name': '粗', 'value': '600'}]"
-                        />
-                    </div>
-                    
-                    <div style="color: black; font-weight: bolder">头像控制</div>
-
-                    <div style="color: black;">
-                        <ToggleSwitch @switch-toggled="toggleImageDisplay" label="显示头像" :defaultValue="true"/>
-                    </div>
-
-                    <div style="color: black;">
-                        <span v-if="showImage">头像形状</span>
-                        <SelectInput 
-                        v-if="showImage"
-                        @update-selection="imageShape = $event"
-                        :default-option="imageShape"
-                        :options="[{'name': '方形', 'value': 'square'}, {'name': '圆形', 'value': 'circle'}]"
-                        />
-                    </div>
-
-                    <div style="color: black;">
-                        <span v-if="showImage">上传头像</span>
-                        <ImageUpload
-                        v-if="showImage"
-                        @image-changed="imgUrl = $event"
-                        />
-                    </div>
+        <div>
+            <SideBar>
+                <ToggleSwitch 
+                :toggle-active="editing"
+                @switch-toggled="toggleEditMode" 
+                label="编辑模式" 
+                :defaultValue="false"/>   
+                <div>
+                    <ExportPdf v-if="!editing" :resume-format="resumeFormat"/>
                 </div>
-                
-        </SideBar>
-        <div style="color: black">
-            <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
-            <CustomButton btn-type="primary" 
-                        style="margin-bottom: 20px; margin-top: 0px;"
-                        @click="saveConfig('template1')"
-                        >保存简历</CustomButton>
-            <AiPolish :fromTemplate="fromTemplate" />
+                <div>
+                    <span style="color: black;">简历格式</span>
+                    <SelectInput 
+                        :options="[{'name':'a4', 'value':'a4'}, {'name':'信件', 'value':'letter'}]"
+                        :default-option="resumeFormat"
+                        @update-selection="resumeFormat = $event"
+                    />
+                </div>
+                <div v-if="editing">
+                    <div style="color: black; font-weight: bolder">左列</div>
+                        <div><ColorInput 
+                            label="标题颜色" 
+                            :default-color="colors.left.highlight"
+                            @color-changed="colors.left.highlight = $event" />
+                        </div>
 
-            </div>
+                        <div>
+                            <ColorInput 
+                            label="背景颜色" 
+                            :default-color="colors.left.background"
+                            @color-changed="colors.left.background = $event" />
+                        </div>
+                        
+                        <div><ColorInput 
+                            label="文本颜色" 
+                            :default-color="colors.left.text"
+                            @color-changed="colors.left.text = $event" />
+                        </div>
 
-            <div 
-                id="resume"
-                class="d-flex" 
-                :class="{ 'edit-off': !editing, 'letter-format': resumeFormat == 'letter' }"
-                :style="cssVariables"
-                >
-                <div class="left-col" :style="{width: percentageWidthLeft}">
-                    <div class="resume-section">
-                        <img :src="imgUrl"
+                        <div style="color: black;">
+                            <PercentageInput 
+                                label="左列宽度控制"
+                                :min="20"
+                                :max="80"
+                                :current-value="widthLeft"
+                                @percentage-changed="widthLeft = $event"
+                                />
+                        </div>
+                    <div style="color: black; font-weight: bolder">右列</div>
+                        <div><ColorInput 
+                            label="标题颜色" 
+                            :default-color="colors.right.highlight"
+                            @color-changed="colors.right.highlight = $event" />
+                        </div>
+
+                        <div>
+                            <ColorInput 
+                            label="背景颜色" 
+                            @color-changed="colors.right.background = $event" />
+                        </div>
+                        
+                        <div><ColorInput 
+                            label="文本颜色" 
+                            :default-color="colors.right.text"
+                            @color-changed="colors.right.text = $event" />
+                        </div>
+
+                        <div style="color: black;">
+                            <span>标题粗细</span>
+                            <SelectInput 
+                            @update-selection="headlineWeight = $event"
+                            :default-option="headlineWeight"
+                            :options="[{'name': '细', 'value': '300'}, {'name': '正常', 'value': '400'}, {'name': '粗', 'value': '600'}]"
+                            />
+                        </div>
+                        
+                        <div style="color: black; font-weight: bolder">头像控制</div>
+
+                        <div style="color: black;">
+                            <ToggleSwitch @switch-toggled="toggleImageDisplay" label="显示头像" :defaultValue="true"/>
+                        </div>
+
+                        <div style="color: black;">
+                            <span v-if="showImage">头像形状</span>
+                            <SelectInput 
                             v-if="showImage"
-                            class="profile-pic" 
-                            alt="profile picture"
-                            :class="{'circle': imageShape == 'circle'}"
-                            >
-                        
-                        <SectionHeadline :editing="editing" :headline="headlines[0]" @headline-edited="updateHeadline($event, 0)"/>
-                        
-                        <div 
-                            :contenteditable="editing" 
-                            @input="updateProperty($event, 'introText')">
-                            {{ introText }}
+                            @update-selection="imageShape = $event"
+                            :default-option="imageShape"
+                            :options="[{'name': '方形', 'value': 'square'}, {'name': '圆形', 'value': 'circle'}]"
+                            />
+                        </div>
+
+                        <div style="color: black;">
+                            <span v-if="showImage">上传头像</span>
+                            <ImageUpload
+                            v-if="showImage"
+                            @image-changed="imgUrl = $event"
+                            />
                         </div>
                     </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[1]" @headline-edited="updateHeadline($event, 1)"/>
-                        
-                        <Contact :editing="editing" :contact="contact" @edit="updateNestedProperty"/>
-                        
+                    
+            </SideBar>
+            <div style="color: black">
+                <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
+                <CustomButton btn-type="primary" 
+                            style="margin-bottom: 20px; margin-top: 0px;"
+                            @click="saveConfig()"
+                            >保存简历</CustomButton>
+                <AiPolish :fromTemplate="fromTemplate" />
+
+            </div>
+        </div>
+
+        <div 
+            id="resume"
+            class="d-flex" 
+            :class="{ 'edit-off': !editing, 'letter-format': resumeFormat == 'letter' }"
+            :style="cssVariables"
+            >
+            <div class="left-col" :style="{width: percentageWidthLeft}">
+                <div class="resume-section">
+                    <img :src="imgUrl"
+                        v-if="showImage"
+                        class="profile-pic" 
+                        alt="profile picture"
+                        :class="{'circle': imageShape == 'circle'}"
+                        >
+                    
+                    <SectionHeadline :editing="editing" :headline="headlines[0]" @headline-edited="updateHeadline($event, 0)"/>
+                    
+                    <div 
+                        :contenteditable="editing" 
+                        @input="updateProperty($event, 'introText')">
+                        {{ introText }}
                     </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
-                        <ul>
-                            <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
-                        </ul>
-                        <EditButtons
-                            :editing="editing"  
-                            @add-click="skills.push('编辑项')" 
-                            @remove-click="skills.pop()"
-                            :show-remove-button="skills.length > 0"
-                        />
+                </div>
+                <div class="resume-section">
+                    <SectionHeadline :editing="editing" :headline="headlines[1]" @headline-edited="updateHeadline($event, 1)"/>
+                    
+                    <Contact :editing="editing" :contact="contact" @edit="updateNestedProperty"/>
+                    
+                </div>
+                <div class="resume-section">
+                    <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
+                    <ul>
+                        <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
+                    </ul>
+                    <EditButtons
+                        :editing="editing"  
+                        @add-click="skills.push('编辑项')" 
+                        @remove-click="skills.pop()"
+                        :show-remove-button="skills.length > 0"
+                    />
+                </div>
+                <div class="resume-section">
+                    <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
+                    <ul>
+                        <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
+                    </ul>
+                    <EditButtons 
+                        :editing="editing"
+                        @add-click="honor.push('编辑项')" 
+                        @remove-click="honor.pop()"
+                        :show-remove-button="honor.length > 0"
+                    />
+                </div>
+            </div>
+            <div class="right-col">
+                <div 
+                    class="name"
+                    :contenteditable="editing" 
+                    @input="updateProperty($event, 'name')">
+                    {{ name }}
+                </div>
+                <div 
+                    class="job-title"
+                    :contenteditable="editing"
+                    @input="updateProperty($event, 'title')">
+                    {{ title }}</div>
+                <div class="resume-section">
+                    <div class="d-flex">
+                        <SectionHeadline :editing="editing" :headline="headlines[4]" @headline-edited="updateHeadline($event, 4)"/>
+                        <EditButtons :editing="editing" :show-remove-button="false" @add-click="addEducation"/>
                     </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
+                        <div v-for="(item, index) in education" :key="index" class="inner-section relative-container">
+                        <div class="d-flex justify-content-between">
+                            <div :contenteditable="editing" @input="updateEducation($event, 'title', index)">
+                            {{ item.title }}
+                        </div>
+                        <div class="delete-button-container">
+                            <EditButtons :editing="editing" @remove-click="removeEducation(index)" :show-add-button="false"/>
+                        </div>
+                        </div>
+                        <div class="d-flex justify-content-between" style="font-weight: bolder;">
+                            <div>
+                                <sapn :contenteditable="editing" @input="updateEducation($event, 'university', index)">{{ item.university }}</sapn>
+                            </div>
+                            <div>
+                                <span :contenteditable="editing" @input="updateEducation($event, 'major', index)">{{ item.major }}</span>
+                            </div>
+                            <div>
+                                <span :contenteditable="editing" @input="updateEducation($event, 'date', index)">{{ item.date }}</span>
+                            </div>
+                        </div>
+                        <div>主修课程：<span :contenteditable="editing" @input="updateEducation($event, 'description', index)">{{ item.description }}</span></div>
+                    </div>
+                </div>
+                <div class="resume-section">
+                    <div class="d-flex">
+                        <SectionHeadline :editing="editing" :headline="headlines[5]" @headline-edited="updateHeadline($event, 5)"/>
+                        <EditButtons :editing="editing" :show-remove-button="false" @add-click="addProjectExperience"/>
+                    </div>
+                        <div v-for="(item, index) in project_experience" :key="index" class="inner-section relative-container">
+                        <div class="d-flex justify-content-between" style="font-weight: bolder;">
+                            <div :contenteditable="editing" @input="updateProperty($event, 'name')">{{ item.name }}</div>
+                            <div class="delete-button-container">
+                            <EditButtons :editing="editing" @remove-click="removeProjectExperience(index)" :show-add-button="false"/>
+                        </div>
+                        </div>
+                            <div class="d-flex justify-content-between">
+                            <div>技术栈：<span :contenteditable="editing" @input="updateProperty($event, 'name')">{{ item.tech_stack }}</span></div>
+                        </div>
                         <ul>
-                            <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
+                            <li v-for="(desc, innerIndex) in item.description" 
+                            :key="innerIndex"
+                            :contenteditable="editing"
+                            @input="updateProjectDescription($event, index, innerIndex)"
+                            >{{ desc }}</li>
                         </ul>
                         <EditButtons 
-                            :editing="editing"
-                            @add-click="honor.push('编辑项')" 
-                            @remove-click="honor.pop()"
-                            :show-remove-button="honor.length > 0"
-                        />
+                        :editing="editing"
+                        @add-click="item.description.push('编辑项')" 
+                        @remove-click="item.description.pop()"
+                        :show-remove-button="item.description.length > 0"
+                    />
                     </div>
                 </div>
-                <div class="right-col">
-                    <div 
-                        class="name"
-                        :contenteditable="editing" 
-                        @input="updateProperty($event, 'name')">
-                        {{ name }}
+                <div class="resume-section">
+                    <div class="d-flex">
+                        <SectionHeadline :editing="editing" :headline="headlines[6]" @headline-edited="updateHeadline($event, 6)"/>
+                        <EditButtons :editing="editing" :show-remove-button="false" @add-click="addExperience"/>
                     </div>
-                    <div 
-                        class="job-title"
-                        :contenteditable="editing"
-                        @input="updateProperty($event, 'title')">
-                        {{ title }}</div>
-                    <div class="resume-section">
-                        <div class="d-flex">
-                            <SectionHeadline :editing="editing" :headline="headlines[4]" @headline-edited="updateHeadline($event, 4)"/>
-                            <EditButtons :editing="editing" :show-remove-button="false" @add-click="addEducation"/>
-                        </div>
-                            <div v-for="(item, index) in education" :key="index" class="inner-section relative-container">
-                            <div class="d-flex justify-content-between">
-                                <div :contenteditable="editing" @input="updateEducation($event, 'title', index)">
-                                {{ item.title }}
-                            </div>
-                            <div class="delete-button-container">
-                                <EditButtons :editing="editing" @remove-click="removeEducation(index)" :show-add-button="false"/>
-                            </div>
-                            </div>
-                            <div class="d-flex justify-content-between" style="font-weight: bolder;">
-                                <div>
-                                    <sapn :contenteditable="editing" @input="updateEducation($event, 'university', index)">{{ item.university }}</sapn>
-                                </div>
-                                <div>
-                                    <span :contenteditable="editing" @input="updateEducation($event, 'major', index)">{{ item.major }}</span>
-                                </div>
-                                <div>
-                                    <span :contenteditable="editing" @input="updateEducation($event, 'date', index)">{{ item.date }}</span>
-                                </div>
-                            </div>
-                            <div>主修课程：<span :contenteditable="editing" @input="updateEducation($event, 'description', index)">{{ item.description }}</span></div>
-                        </div>
-                    </div>
-                    <div class="resume-section">
-                        <div class="d-flex">
-                            <SectionHeadline :editing="editing" :headline="headlines[5]" @headline-edited="updateHeadline($event, 5)"/>
-                            <EditButtons :editing="editing" :show-remove-button="false" @add-click="addProjectExperience"/>
-                        </div>
-                            <div v-for="(item, index) in project_experience" :key="index" class="inner-section relative-container">
-                            <div class="d-flex justify-content-between" style="font-weight: bolder;">
-                                <div :contenteditable="editing" @input="updateProperty($event, 'name')">{{ item.name }}</div>
-                                <div class="delete-button-container">
-                                <EditButtons :editing="editing" @remove-click="removeProjectExperience(index)" :show-add-button="false"/>
-                            </div>
-                            </div>
-                                <div class="d-flex justify-content-between">
-                                <div>技术栈：<span :contenteditable="editing" @input="updateProperty($event, 'name')">{{ item.tech_stack }}</span></div>
-                            </div>
-                            <ul>
-                                <li v-for="(desc, innerIndex) in item.description" 
-                                :key="innerIndex"
-                                :contenteditable="editing"
-                                @input="updateProjectDescription($event, index, innerIndex)"
-                                >{{ desc }}</li>
-                            </ul>
-                            <EditButtons 
-                            :editing="editing"
-                            @add-click="item.description.push('编辑项')" 
-                            @remove-click="item.description.pop()"
-                            :show-remove-button="item.description.length > 0"
-                        />
-                        </div>
-                    </div>
-                    <div class="resume-section">
-                        <div class="d-flex">
-                            <SectionHeadline :editing="editing" :headline="headlines[6]" @headline-edited="updateHeadline($event, 6)"/>
-                            <EditButtons :editing="editing" :show-remove-button="false" @add-click="addExperience"/>
-                        </div>
-                            <div v-for="(item, index) in experience" :key="index" class="inner-section relative-container">
-                                <div class="d-flex justify-content-between" style="font-weight: bold;">
-                                    <div :contenteditable="editing" @input="updateExperience($event, 'position', index)">{{ item.position }}</div>
-                                        <div class="delete-button-container">
-                                            <EditButtons :editing="editing" @remove-click="removeExperience(index)" :show-add-button="false"/>
-                                        </div>
+                        <div v-for="(item, index) in experience" :key="index" class="inner-section relative-container">
+                            <div class="d-flex justify-content-between" style="font-weight: bold;">
+                                <div :contenteditable="editing" @input="updateExperience($event, 'position', index)">{{ item.position }}</div>
+                                    <div class="delete-button-container">
+                                        <EditButtons :editing="editing" @remove-click="removeExperience(index)" :show-add-button="false"/>
                                     </div>
-                                <div class="d-flex justify-content-between" style="font-weight: bold;">
-                                <div>
-                                    <span :contenteditable="editing" @input="updateExperience($event, 'company', index)">{{ item.company }}</span>
                                 </div>
-                                <div>
-                                    <span :contenteditable="editing" @input="updateExperience($event, 'location', index)">{{ item.location }}</span>
-                                </div>
-                                <div>
-                                    <span :contenteditable="editing" @input="updateExperience($event, 'date', index)">{{ item.date }}</span>
-                                </div>
+                            <div class="d-flex justify-content-between" style="font-weight: bold;">
+                            <div>
+                                <span :contenteditable="editing" @input="updateExperience($event, 'company', index)">{{ item.company }}</span>
                             </div>
-                            <ul>
-                                <li v-for="(desc, innerIndex) in item.description" 
-                                :key="innerIndex"
-                                :contenteditable="editing"
-                                @input="updateExperienceDescription($event, index, innerIndex)"
-                                >
-                                {{ desc }}</li>
-                            </ul>
-                            <EditButtons
-                            :editing="editing" 
-                            @add-click="item.description.push('编辑项')" 
-                            @remove-click="item.description.pop()"
-                            :show-remove-button="item.description.length > 0"
-                        />
+                            <div>
+                                <span :contenteditable="editing" @input="updateExperience($event, 'location', index)">{{ item.location }}</span>
+                            </div>
+                            <div>
+                                <span :contenteditable="editing" @input="updateExperience($event, 'date', index)">{{ item.date }}</span>
+                            </div>
                         </div>
+                        <ul>
+                            <li v-for="(desc, innerIndex) in item.description" 
+                            :key="innerIndex"
+                            :contenteditable="editing"
+                            @input="updateExperienceDescription($event, index, innerIndex)"
+                            >
+                            {{ desc }}</li>
+                        </ul>
+                        <EditButtons
+                        :editing="editing" 
+                        @add-click="item.description.push('编辑项')" 
+                        @remove-click="item.description.pop()"
+                        :show-remove-button="item.description.length > 0"
+                    />
                     </div>
                 </div>
             </div>
+        </div>
     </main>
 </template>
 
@@ -449,7 +451,6 @@ import SectionHeadline from '../../components/SectionHeadline.vue';
 import Contact from '../../components/Contact.vue';
 import EditButtons from '../../components/EditButtons.vue';
 import ToggleSwitch from '../../components/ToggleSwitch.vue';
-import { fa } from 'element-plus/es/locales.mjs';
 import SideBar from '../../components/SideBar.vue';
 import ColorInput from '../../components/ColorInput.vue';
 import PercentageInput from '../../components/PercentageInput.vue';
@@ -460,12 +461,21 @@ import ExportPdf from '../../components/ExportPdf.vue';
 import CustomButton from '../../components/CustomButton.vue';
 import { useRouter } from 'vue-router';
 import AiPolish from '../../components/AiPolish.vue';
+import { fetchResume, saveResume } from '../../apis/api';
 
 const router = useRouter();
 
 export default {
     created() {
-        const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
+        const resumeIdStr = this.$route.query.resume_id
+        this.resumeId = resumeIdStr ? Number(resumeIdStr) : null;
+
+        if(this.resumeId) {
+            console.log("从数据库加载简历",this.resumeId);
+            this.loadFromDatabase(this.resumeId)
+        } else {
+            console.log("从 localStorage 加载简历");
+            const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
             if (savedResume) {
                 try {
                     const resume = JSON.parse(savedResume);
@@ -479,6 +489,10 @@ export default {
                     console.error("Error parsing saved resume configuration: ", error);
                 }
             }
+        }
+
+        // 判断路由来源，加载来自不同地方的简历数据json
+
     },
     components: {
         SectionHeadline,
@@ -582,7 +596,8 @@ export default {
             templateName: "template1",
             fromTemplate: "template1",
             aiResponse: "",    // AI 返回的数据
-            loading: false     // 加载状态
+            loading: false,     // 加载状态
+            resumeId: null,
         }
     },
 
@@ -667,9 +682,17 @@ export default {
         toggleImageDisplay(value) {
             this.showImage = value;
         },
-        saveConfig(templateName) {
-            this.fromTemplate = templateName;
-            localStorage.setItem(`resume_${this.fromTemplate}`, JSON.stringify(this.$data))
+
+        async saveConfig() {
+            const resumeData = JSON.stringify(this.$data)
+            localStorage.setItem(`resume_${this.fromTemplate}`, resumeData);
+
+            try {
+                await saveResume(this.$data);
+                console.log('保存成功');
+            } catch (error) {
+                console.error('保存失败:', error);
+            }
         },
 
         loadIntoData(config) {
@@ -679,6 +702,25 @@ export default {
                 }
             }
         },
+
+        async loadFromDatabase(resumeId) {
+            console.log(`正在从数据库加载简历 ID: ${resumeId}`);
+            try {
+                const resume = await fetchResume(resumeId);
+                if(resume) {
+                    const parsedData = JSON.parse(resume[0].resume_data);
+                    console.log(resume[0].resume_data)
+                    this.loadIntoData(parsedData);
+                    
+                    console.log('加载成功');
+                } else {
+                    console.log('简历不存在');
+                }
+            } catch (error) {
+                console.error(`加载简历 ID ${resumeId} 失败:`, error);
+            }
+        },
+
         goToTemplate() {
             this.$router.push('/home/template');
         },

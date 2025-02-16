@@ -29,9 +29,12 @@ func InitRouter() {
 		UserRouter.POST("/:userId/content", PostContent)
 		UserRouter.GET("/:userId/content", GetContent)
 		UserRouter.POST("/ask", QWenNormalChat)
-		UserRouter.GET("/ask_base", QWenNormalChatBase)
+		UserRouter.POST("/ask_base", QWenNormalChatBase)
 		UserRouter.GET("/getTemplate/:template_id", GetTemplateFromId)
-
+		UserRouter.POST("/resume/save", AddResume)
+		UserRouter.GET("/resume/list", GetResume)
+		UserRouter.DELETE("/resume/delete/:resume_id", DeleteResume)
+		UserRouter.GET("/resume/:resume_id", GetResumeFromId)
 	}
 	r.Run(":8888")
 }

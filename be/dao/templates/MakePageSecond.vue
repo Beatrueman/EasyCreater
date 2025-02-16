@@ -105,7 +105,7 @@
             <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
             <CustomButton btn-type="primary" 
                         style="margin-bottom: 20px; margin-top: 0px;"
-                        @click="saveConfig()"
+                        @click="saveConfig('template2')"
                         >保存简历</CustomButton>
             <AiPolish :fromTemplate="fromTemplate" />
         </div>
@@ -451,21 +451,12 @@ import ExportPdf from '../../components/ExportPdf.vue';
 import CustomButton from '../../components/CustomButton.vue';
 import { useRouter } from 'vue-router';
 import AiPolish from '../../components/AiPolish.vue';
-import { fetchResume, saveResume } from '../../apis/api';
 
 const router = useRouter();
 
 export default {
     created() {
-        const resumeIdStr = this.$route.query.resume_id
-        this.resumeId = resumeIdStr ? Number(resumeIdStr) : null;
-
-        if(this.resumeId) {
-            console.log("从数据库加载简历",this.resumeId);
-            this.loadFromDatabase(this.resumeId)
-        } else {
-            console.log("从 localStorage 加载简历");
-            const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
+        const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
             if (savedResume) {
                 try {
                     const resume = JSON.parse(savedResume);
@@ -473,13 +464,12 @@ export default {
                     if (resume.fromTemplate === this.templateName) {
                         this.loadIntoData(resume);
                     } else {
-                        console.warn(`数据来自 ${resume.fromTemplate}，不匹配当前模板 ${this.templateName}`);
+                        console.warn(`数据来自 ${resume.fromTemplate}，不匹配当前模板 ${templateName}`);
                     }
                 } catch (error) {
                     console.error("Error parsing saved resume configuration: ", error);
                 }
             }
-        }
     },
     components: {
         SectionHeadline,
@@ -583,8 +573,7 @@ export default {
             templateName: "template2",
             fromTemplate: "template2",
             aiResponse: "",    // AI 返回的数据
-            loading: false,
-            resumeId: null,     
+            loading: false     // 加载状态
         }
     },
 
@@ -669,16 +658,9 @@ export default {
         toggleImageDisplay(value) {
             this.showImage = value;
         },
-        async saveConfig() {
-            const resumeData = JSON.stringify(this.$data)
-            localStorage.setItem(`resume_${this.fromTemplate}`, resumeData);
-
-            try {
-                await saveResume(this.$data);
-                console.log('保存成功');
-            } catch (error) {
-                console.error('保存失败:', error);
-            }
+        saveConfig(templateName) {
+            this.fromTemplate = templateName;
+            localStorage.setItem(`resume_${this.fromTemplate}`, JSON.stringify(this.$data))
         },
 
         loadIntoData(config) {
@@ -686,24 +668,6 @@ export default {
                 if(this.$data.hasOwnProperty(key) && key !== 'fromTemplate') {
                     this[key] = config[key]
                 }
-            }
-        },
-
-        async loadFromDatabase(resumeId) {
-            console.log(`正在从数据库加载简历 ID: ${resumeId}`);
-            try {
-                const resume = await fetchResume(resumeId);
-                if(resume) {
-                    const parsedData = JSON.parse(resume[0].resume_data);
-                    console.log(resume[0].resume_data)
-                    this.loadIntoData(parsedData);
-                    
-                    console.log('加载成功');
-                } else {
-                    console.log('简历不存在');
-                }
-            } catch (error) {
-                console.error(`加载简历 ID ${resumeId} 失败:`, error);
             }
         },
         goToTemplate() {

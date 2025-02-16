@@ -2,7 +2,7 @@
     <el-button
       type="warning"
       plain
-      style="margin-bottom: 20px; margin-top: 0px; margin-left: 520px;"
+      style="margin-bottom: 20px; margin-top: 0px; margin-left: 530px;"
       @click="openDrawer"
       :loading="loading"
     >

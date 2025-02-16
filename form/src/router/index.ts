@@ -9,8 +9,7 @@ import AboutPage from '../views/AboutPage.vue'
 import IndexPage from '../views/IndexPage.vue'
 import MyResumePage from '../views/MyResumePage.vue'
 import { jwtDecode } from 'jwt-decode'
-import { defineAsyncComponent } from 'vue';
-import { getTemplateData } from '../apis/api'
+
 
 const routes = [{ path: '/', name: 'login', component: Login },
                 { path: '/regist', name: 'regist', component: Regist },
@@ -22,15 +21,11 @@ const routes = [{ path: '/', name: 'login', component: Login },
                   },
                   { path: 'template/first', 
                     name: 'MakePage', 
-                    component: defineAsyncComponent(() => 
-                      getTemplateData(1)
-                    )
+                    component: MakePage,
                   },
                   { path: 'template/second', 
                     name: 'MakePageSecond', 
-                    component: defineAsyncComponent(() => 
-                      getTemplateData(2)
-                    )
+                    component: MakePageSecond,
                   },
                   { path: 'about', 
                     name: 'AboutPage', 

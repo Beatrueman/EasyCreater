@@ -1,5 +1,6 @@
 import axiosInstance from '../utils/axios';
-import { defineComponent } from 'vue';
+import { defineComponent, markRaw, resolveComponent } from 'vue';
+import { useRouter } from 'vue-router';
 
 interface RegisterData {
   username: string;
@@ -103,22 +104,45 @@ export const getUserInfo = async () => {
   }
 };
 
-export const getTemplateData = async (templateId: Number) => {
+export const saveResume = async (resumeData: any) => {
   try {
-    const response = await axiosInstance.get(`/user/template/${templateId}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await axiosInstance.post(`/user/resume/save`, {
+      resume_data: JSON.stringify(resumeData), // 转换为 JSON 字符串
     });
-    const { template, style, script } = response.data.data;
-    console.log("获取模板数据成功!");
-    return defineComponent({
-      template,
-      style,
-      script,
-    });
+    return response.data;
   } catch (error) {
-    console.error("获取模板数据失败:", error);
+    console.error("保存简历失败:", error);
+    throw error;
+  }
+};
+
+// 获取已保存的简历列表
+export const fetchResumeList = async () => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/list`);
+    return response.data; // 返回简历数组
+  } catch (error) {
+    console.error("获取简历列表失败:", error);
+    throw error;
+  }
+};
+
+export const fetchResume = async (resumeId: number) => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/${resumeId}`);
+    return response.data; 
+  } catch (error) {
+    console.error("获取简历列表失败:", error);
+    throw error;
+  }
+};
+
+export const deleteResume = async (resumeId: number) => {
+  try {
+    const response = await axiosInstance.delete(`/user/resume/delete/${resumeId}`);
+    return response;
+  } catch (error) {
+    console.error("获取简历列表失败:", error);
     throw error;
   }
 };
