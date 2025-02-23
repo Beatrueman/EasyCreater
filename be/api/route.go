@@ -18,7 +18,6 @@ func InitRouter() {
 		AdminRouter.GET("/search", getAllUserInfo)
 		AdminRouter.DELETE("/delete/:userId", deleteUser)
 		AdminRouter.POST("/role/:userId", ChangeUserRole)
-		AdminRouter.POST("/saveTemplate", SaveTemplate)
 	}
 
 	UserRouter := r.Group("/user")
@@ -30,11 +29,12 @@ func InitRouter() {
 		UserRouter.GET("/:userId/content", GetContent)
 		UserRouter.POST("/ask", QWenNormalChat)
 		UserRouter.POST("/ask_base", QWenNormalChatBase)
-		UserRouter.GET("/getTemplate/:template_id", GetTemplateFromId)
 		UserRouter.POST("/resume/save", AddResume)
 		UserRouter.GET("/resume/list", GetResume)
 		UserRouter.DELETE("/resume/delete/:resume_id", DeleteResume)
 		UserRouter.GET("/resume/:resume_id", GetResumeFromId)
+		UserRouter.POST("/alatar/upload", AddUserAlatar)
+		UserRouter.POST("/alatar/load", GetUserAlatar)
 	}
 	r.Run(":8888")
 }

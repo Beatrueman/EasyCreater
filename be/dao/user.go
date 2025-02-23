@@ -192,3 +192,23 @@ func SelectSingleUserInfo(username string) (model.User, error) {
 	}
 	return user, nil
 }
+
+func AddUserAlatar(username, alatar string) error {
+	var user model.User
+	res := db.Model(&user).Where("username = ?", username).Update("alatar", alatar)
+	if res.Error != nil {
+		log.Printf("error add user: %v", res.Error)
+		return res.Error
+	}
+	return nil
+}
+
+func GetAlatarFromUsername(username string) (string, error) {
+	var user model.User
+	res := db.Where("username = ?", username).First(&user)
+	if res.Error != nil {
+		log.Printf("error get user: %v", res.Error)
+		return "", res.Error
+	}
+	return user.Alatar, nil
+}

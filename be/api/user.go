@@ -231,7 +231,6 @@ func ChangeUserPassword(c *gin.Context) {
 		log.Println("Failed to update password:", err)
 		return
 	}
-
 	utils.RespSuccess(c, "Password updated successfully!")
 }
 
@@ -268,4 +267,41 @@ func getAllUserInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, users)
+}
+
+func AddUserAlatar(c *gin.Context) {
+	username, ok := c.Get("username")
+	if !ok {
+		utils.RespFail(c, "Username not found in context")
+		return
+	}
+	alatar := c.PostForm("alatar")
+	if alatar == "" {
+		utils.RespFail(c, "alatar is missing!")
+		return
+	}
+	err := dao.AddUserAlatar(username.(string), alatar)
+	if err != nil {
+		utils.RespFail(c, "Failed to add user alatar!")
+		return
+	}
+	utils.RespSuccess(c, "Added user alatar successfully!")
+}
+
+func GetUserAlatar(c *gin.Context) {
+	username, ok := c.Get("username")
+	if !ok {
+		utils.RespFail(c, "Username not found in context")
+		return
+	}
+	alatar, err := dao.GetAlatarFromUsername(username.(string))
+	if err != nil {
+		utils.RespFail(c, "Failed to get user alatar!")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"msg":    "User alatar retrieved successfully!",
+		"alatar": alatar,
+		"status": 200,
+	})
 }
