@@ -1,6 +1,4 @@
 import axiosInstance from '../utils/axios';
-import { defineComponent, markRaw, resolveComponent } from 'vue';
-import { useRouter } from 'vue-router';
 
 interface RegisterData {
   username: string;
@@ -146,3 +144,25 @@ export const deleteResume = async (resumeId: number) => {
     throw error;
   }
 };
+
+export const uploadAvatar = async (ImgBase64String: Base64URLString) => {
+  try {
+    const response = await axiosInstance.post(`/user/avatar/upload`, {
+      "avatar": ImgBase64String,
+    });
+    return response;
+  } catch(error) {
+    console.error("上传头像失败:", error);
+    throw error;
+  }
+};
+
+export  const loadAvatar = async () => {
+  try {
+    const response = await axiosInstance.get(`/user/avatar/load`);
+    return response;
+  } catch(error) {
+    console.error("加载头像失败:", error);
+    throw error;
+  }
+};  

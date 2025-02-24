@@ -33,8 +33,8 @@ func InitRouter() {
 		UserRouter.GET("/resume/list", GetResume)
 		UserRouter.DELETE("/resume/delete/:resume_id", DeleteResume)
 		UserRouter.GET("/resume/:resume_id", GetResumeFromId)
-		UserRouter.POST("/alatar/upload", AddUserAlatar)
-		UserRouter.POST("/alatar/load", GetUserAlatar)
+		UserRouter.POST("/avatar/upload", AddUserAvatar)
+		UserRouter.GET("/avatar/load", GetUserAvatar)
 	}
 	r.Run(":8888")
 }

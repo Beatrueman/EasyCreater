@@ -6,7 +6,7 @@ phone: 15592282002
 
 # MySQL数据库配置
 MySQL:
-  host: localhost
+  host: 192.168.102.140
   port: 3306
   database: demo
   user: root

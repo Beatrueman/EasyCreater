@@ -18,9 +18,7 @@
                             @click="handleClick(resume)"
                           />
                       </el-descriptions-item>
-                      <el-descriptions-item label="简历序号">
-                        {{ resume.resume_id }}
-                      </el-descriptions-item>
+
                       <el-descriptions-item label="模板名称">
                         {{ resume.template_name }}
                       </el-descriptions-item>
@@ -61,12 +59,6 @@
                   />
                 </div>
 
-              </div>
-            </el-tab-pane>
-
-            <el-tab-pane label="我收藏的" name="my-favorite">
-              <div class="template-item-container">
-                
               </div>
             </el-tab-pane>
 

@@ -469,27 +469,28 @@ export default {
     created() {
         const resumeIdStr = this.$route.query.resume_id
         this.resumeId = resumeIdStr ? Number(resumeIdStr) : null;
-
-        if(this.resumeId) {
-            console.log("从数据库加载简历",this.resumeId);
-            this.loadFromDatabase(this.resumeId)
-        } else {
-            console.log("从 localStorage 加载简历");
-            const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
-            if (savedResume) {
-                try {
-                    const resume = JSON.parse(savedResume);
-                    // 只有当来源模板匹配时，才加载数据
-                    if (resume.fromTemplate === this.templateName) {
-                        this.loadIntoData(resume);
-                    } else {
-                        console.warn(`数据来自 ${resume.fromTemplate}，不匹配当前模板 ${this.templateName}`);
-                    }
-                } catch (error) {
-                    console.error("Error parsing saved resume configuration: ", error);
-                }
-            }
-        }
+        console.log("从数据库加载简历",this.resumeId);
+        this.loadFromDatabase(this.resumeId);
+        // if(this.resumeId) {
+        //     console.log("从数据库加载简历",this.resumeId);
+        //     this.loadFromDatabase(this.resumeId)
+        // } else {
+        //     console.log("从 localStorage 加载简历");
+        //     const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
+        //     if (savedResume) {
+        //         try {
+        //             const resume = JSON.parse(savedResume);
+        //             // 只有当来源模板匹配时，才加载数据
+        //             if (resume.fromTemplate === this.templateName) {
+        //                 this.loadIntoData(resume);
+        //             } else {
+        //                 console.warn(`数据来自 ${resume.fromTemplate}，不匹配当前模板 ${this.templateName}`);
+        //             }
+        //         } catch (error) {
+        //             console.error("Error parsing saved resume configuration: ", error);
+        //         }
+        //     }
+        // }
 
         // 判断路由来源，加载来自不同地方的简历数据json
 

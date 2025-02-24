@@ -1,7 +1,7 @@
 <template>
     <main class="container">
         <div>
-        <el-alert 
+        <!-- <el-alert 
                 v-if="alertVisible" 
                 title="密码修改成功，请重新登录!" 
                 type="success" 
@@ -17,7 +17,18 @@
                 show-icon 
                 closable
                 @close="alertErrorVisible = false" 
-                class="alert-position" />
+                class="alert-position" /> -->
+                <AlertMessage 
+                v-model:visible="alertVisible"
+                message="密码修改成功，请重新登录!"
+                type="success"
+                />
+                
+                <AlertMessage 
+                v-model:visible="alertErrorVisible"
+                :message="alertErrorMessage"
+                type="error"
+                />
             </div>
         <div class="left-col">
             <div>
@@ -27,6 +38,7 @@
             <div class="info-container">
                 <div class="section">
                     头像
+                <AvatarUpload :sizeLimit="2"/>
                 </div>
                 <div class="section">
                     <el-icon><Avatar /></el-icon>
@@ -91,7 +103,9 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserInfo, changeUserPassword } from '../apis/api'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus';
+import AvatarUpload from '../components/AvatarUpload.vue';
+import AlertMessage from '../components/AlertMessage.vue';
 
 const router = useRouter()
 const username = ref('')
@@ -104,6 +118,7 @@ const newPassword = ref('')
 const alertVisible = ref(false);
 const alertErrorVisible = ref(false);
 const alertErrorMessage = ref('');
+
 
 const changePassword = async () => {
     if (!Password.value || !newPassword.value) {
@@ -187,6 +202,7 @@ const goBack = () => {
 </script>
 
 <style scoped>
+
 .alert-position {
     width: 500px;
 }

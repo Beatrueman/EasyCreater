@@ -193,9 +193,9 @@ func SelectSingleUserInfo(username string) (model.User, error) {
 	return user, nil
 }
 
-func AddUserAlatar(username, alatar string) error {
+func AddUserAvatar(username, avatar string) error {
 	var user model.User
-	res := db.Model(&user).Where("username = ?", username).Update("alatar", alatar)
+	res := db.Model(&user).Where("username = ?", username).Update("avatar", avatar)
 	if res.Error != nil {
 		log.Printf("error add user: %v", res.Error)
 		return res.Error
@@ -203,12 +203,12 @@ func AddUserAlatar(username, alatar string) error {
 	return nil
 }
 
-func GetAlatarFromUsername(username string) (string, error) {
+func GetAvatarFromUsername(username string) (string, error) {
 	var user model.User
 	res := db.Where("username = ?", username).First(&user)
 	if res.Error != nil {
 		log.Printf("error get user: %v", res.Error)
 		return "", res.Error
 	}
-	return user.Alatar, nil
+	return user.Avatar, nil
 }

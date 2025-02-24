@@ -269,39 +269,48 @@ func getAllUserInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
-func AddUserAlatar(c *gin.Context) {
+func AddUserAvatar(c *gin.Context) {
+	var req struct {
+		Avatar string `json:"avatar"`
+	}
+
 	username, ok := c.Get("username")
 	if !ok {
 		utils.RespFail(c, "Username not found in context")
 		return
 	}
-	alatar := c.PostForm("alatar")
-	if alatar == "" {
-		utils.RespFail(c, "alatar is missing!")
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.RespFail(c, "Invalid request body")
+		log.Println("error binding JSON:", err)
 		return
 	}
-	err := dao.AddUserAlatar(username.(string), alatar)
+
+	avatar := req.Avatar
+	err := dao.AddUserAvatar(username.(string), avatar)
 	if err != nil {
-		utils.RespFail(c, "Failed to add user alatar!")
+		utils.RespFail(c, "Failed to add user avatar!")
+		log.Println("Failed to add user avatar:", err)
 		return
 	}
-	utils.RespSuccess(c, "Added user alatar successfully!")
+	log.Println("add avatar from", username)
+	utils.RespSuccess(c, "Added user avatar successfully!")
 }
 
-func GetUserAlatar(c *gin.Context) {
+func GetUserAvatar(c *gin.Context) {
 	username, ok := c.Get("username")
 	if !ok {
 		utils.RespFail(c, "Username not found in context")
 		return
 	}
-	alatar, err := dao.GetAlatarFromUsername(username.(string))
+	avatar, err := dao.GetAvatarFromUsername(username.(string))
 	if err != nil {
-		utils.RespFail(c, "Failed to get user alatar!")
+		utils.RespFail(c, "Failed to get user avatar!")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"msg":    "User alatar retrieved successfully!",
-		"alatar": alatar,
+		"msg":    "User avatar retrieved successfully!",
+		"data":   avatar,
 		"status": 200,
 	})
 }

@@ -9,6 +9,7 @@ import AboutPage from '../views/AboutPage.vue'
 import IndexPage from '../views/IndexPage.vue'
 import MyResumePage from '../views/MyResumePage.vue'
 import { jwtDecode } from 'jwt-decode'
+import SharePage from '../views/SharePage.vue'
 
 
 const routes = [{ path: '/', name: 'login', component: Login },
@@ -38,6 +39,10 @@ const routes = [{ path: '/', name: 'login', component: Login },
                   { path: 'my_resume', 
                     name: 'MyResumePage', 
                     component: MyResumePage
+                  },
+                  { path: 'share', 
+                    name: 'SharePage', 
+                    component: SharePage
                   },
                 ]},
 
