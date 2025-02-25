@@ -31,6 +31,8 @@ func InitRouter() {
 		UserRouter.POST("/ask_base", QWenNormalChatBase)
 		UserRouter.POST("/resume/save", AddResume)
 		UserRouter.GET("/resume/list", GetResume)
+		UserRouter.PUT("/resume/share/:resume_id", ShareResume)
+		UserRouter.GET("/resume/share", GetSharedResume) // 获取用户已分享的简历
 		UserRouter.DELETE("/resume/delete/:resume_id", DeleteResume)
 		UserRouter.GET("/resume/:resume_id", GetResumeFromId)
 		UserRouter.POST("/avatar/upload", AddUserAvatar)

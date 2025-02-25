@@ -1,7 +1,11 @@
 <template>
     <main class="container">
         <div class="left-col">
-          <el-tabs style="margin-left: 10px;" v-model="activeNameLeft" class="demo-tabs">
+          <el-tabs 
+            style="margin-left: 10px;" 
+            v-model="activeNameLeft" 
+            class="demo-tabs"
+            >
             <el-tab-pane label="我创建的" name="my-resume">
               <div class="resume-list">
                 <template v-if="myResumes.length > 0">
@@ -33,6 +37,13 @@
                           :icon="Delete"
                           @click="handleDelete(resume.resume_id)"
                           >删除</el-button>
+                          <el-button class="btn"
+                          type="primary"
+                          primary
+                          size="small" 
+                          :icon="Share"
+                          @click="handleShare(resume.resume_id, 'share')"
+                          >分享</el-button>
                       </el-descriptions-item>
                   </el-descriptions>
                 </template>
@@ -63,8 +74,55 @@
             </el-tab-pane>
 
             <el-tab-pane label="我发布的" name="my-share">
-              <div class="template-item-container">
-                
+              <div class="resume-list">
+                <template v-if="mySharedResumes.length > 0">
+                  <el-descriptions
+                    v-for="resume in paginatedSharedResumes"
+                    :key="resume.resume_id"
+                    class="resume-item"
+                    :column="3"
+                  >
+                      <el-descriptions-item >
+                          <img
+                            :src="resume.template_name === 'template1' ? 'public/template1.jpg' : 'public/template2.jpg'"
+                            class="resume-preview-img"
+                            @click="handleClick(resume)"
+                          />
+                      </el-descriptions-item>
+
+                      <el-descriptions-item label="模板名称">
+                        {{ resume.template_name }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="更新时间">
+                        {{ formatDate(resume.Timestamp) }}
+                      </el-descriptions-item>
+                      <el-descriptions-item>
+                        <el-button class="btn"
+                          type="danger" 
+                          primary
+                          size="small" 
+                          @click="handleShare(resume.resume_id, 'unshare')"
+                          >取消分享</el-button>
+
+                      </el-descriptions-item>
+                  </el-descriptions>
+                </template>
+
+                <template v-else>
+                  <div class="empty-state">
+                    <h4 style="margin-left: 10px;">还没有分享简历哦~</h4>
+                  </div>
+                </template>
+
+                <div class="pagination-container">
+                  <ChangePage
+                  :total="mySharedResumes.length"
+                  :pageSize="pageSize"
+                  :currentPage="currentPage"
+                  @pageChange="handlePageChange"
+                  />
+                </div>
+
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -167,9 +225,9 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { UploadFilled } from '@element-plus/icons-vue'
-import { User, Medal, Delete, Promotion } from '@element-plus/icons-vue'
+import { User, Medal, Delete, Promotion, Share } from '@element-plus/icons-vue'
 import AiResume from '../components/AiResume.vue'
-import { fetchResumeList, deleteResume } from '../apis/api'
+import { fetchResumeList, deleteResume, shareResume, getSharedResume } from '../apis/api'
 import ChangePage from '../components/ChangePage.vue'
 
 interface ResumeData {
@@ -179,12 +237,15 @@ interface ResumeData {
   template_name: string;
   resume_data: string;
   Timestamp: string;
+  IsShared: boolean;
 }
+
 
 const activeNameLeft = ref('my-resume')
 const activeNameRight = ref('from-template')
 const router = useRouter()
 const myResumes = ref<ResumeData[]>([]);
+const mySharedResumes = ref<ResumeData[]>([])
 const currentPage = ref(1);
 const pageSize = ref(3);
 
@@ -197,6 +258,13 @@ const paginatedResumes = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize.value;
   const endIndex = startIndex + pageSize.value;
   return myResumes.value.slice(startIndex, endIndex);
+});
+
+const paginatedSharedResumes = computed(() => {
+  if (!mySharedResumes.value) return []; 
+  const startIndex = (currentPage.value - 1) * pageSize.value;
+  const endIndex = startIndex + pageSize.value;
+  return mySharedResumes.value.slice(startIndex, endIndex);
 });
 
 const handlePageChange = (page: number) => {
@@ -260,13 +328,39 @@ const handleDelete = (resumeId: number) => {
     }
     // 刷新页面
     myResumes.value = myResumes.value.filter(resume => resume.resume_id !== resumeId);
+    mySharedResumes.value = mySharedResumes.value.filter(resume => resume.resume_id !== resumeId);
   } catch(error) {
     console.error('Error deleting resume:', error);
   }
 }
 
+const handleShare =  async (resumeId: number, isShare: string) => {
+  try {
+    const result = await shareResume(resumeId, isShare);
+    if (!result) {
+      console.error('Failed to share resume.');
+      return;
+    }
+    mySharedResumes.value = mySharedResumes.value.filter(resume => resume.resume_id !== resumeId);
+    await fetchSharedResumes();
+  } catch(error) {
+      console.error('Error sharing resume:', error);
+  }
+}
+
+const fetchSharedResumes = async () => {
+  try {
+    const res = await getSharedResume()
+    console.log("API 返回数据:", res)
+    mySharedResumes.value = res || []
+  } catch(error) {
+    console.error('Error fetching resumes:', error)
+  }
+}
+
 onMounted(() => {
   fetchResumes();
+  fetchSharedResumes();
 });
 </script>
 

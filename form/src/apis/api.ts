@@ -166,3 +166,36 @@ export  const loadAvatar = async () => {
     throw error;
   }
 };  
+
+export const shareResume = async (resumeId: number, IsShare: string) => {
+  try {
+    const response = await axiosInstance.put(`/user/resume/share/${resumeId}`, {
+      "action": IsShare,
+    });
+    return response;
+  } catch(error) {
+    console.error("分享简历失败:", error);
+    throw error;
+  }
+};
+
+export const getSharedResume = async () => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/share`);
+    return response.data;
+  } catch(error) {
+    console.error("获取该用户已分享简历失败:", error);
+    throw error;
+  }
+};
+
+
+export const getAllSharedResume = async () => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/share?is_all=true`);
+    return response.data;
+  } catch(error) {
+    console.error("获取该用户已分享简历失败:", error);
+    throw error;
+  }
+};

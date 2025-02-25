@@ -128,7 +128,7 @@ const goToMakePageSecond = () => {
 
 @media (min-width: 600px) {
   .tab-container {
-    height: 78vh;
+    height: 82vh;
   }
 }
 </style>

@@ -31,6 +31,7 @@ type ResumeData struct {
 	TemplateName string    `gorm:"column:template_name;not null" json:"template_name"`
 	Resume       string    `gorm:"column:resume_data;not null" json:"resume_data"`
 	Timestamp    time.Time `gorm:"column:timestamp;default:CURRENT_TIMESTAMP;type:datetime;not null"`
+	IsShared     bool      `gorm:"column:is_shared;default:false;type:tinyint(1);not null"`
 }
 
 type ChangePasswordRequest struct {

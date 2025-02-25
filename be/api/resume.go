@@ -57,6 +57,7 @@ func AddResume(c *gin.Context) {
 		UserID:       userId,
 		TemplateName: templateName,
 		Resume:       requestData.ResumeData,
+		IsShared:     false,
 	}
 
 	if err := dao.AddResumeData(resume); err != nil {
@@ -68,12 +69,6 @@ func AddResume(c *gin.Context) {
 }
 
 func GetResume(c *gin.Context) {
-	//username := c.Query("username")
-	//if username == "" {
-	//	utils.RespFail(c, "Username is required")
-	//	return
-	//}
-
 	username, ok := c.Get("username")
 	if !ok {
 		utils.RespFail(c, "Username not found in context")
@@ -130,6 +125,76 @@ func GetResumeFromId(c *gin.Context) {
 		utils.RespFail(c, "Failed to retrieve resume data")
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"data":   resumeData,
+	})
+}
+
+func ShareResume(c *gin.Context) {
+	resumeIdstr := c.Param("resume_id")
+	if resumeIdstr == "" {
+		utils.RespFail(c, "Resume ID is required")
+		return
+	}
+
+	resumeId, err := strconv.Atoi(resumeIdstr)
+	if err != nil {
+		utils.RespFail(c, "Invalid Resume ID")
+		return
+	}
+
+	var requestBody struct {
+		Action string `json:"action"` // share or unshare
+	}
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		utils.RespFail(c, "Invalid JSON")
+		return
+	}
+
+	var isShared bool
+	if requestBody.Action == "share" {
+		isShared = true
+	} else if requestBody.Action == "unshare" {
+		isShared = false
+	} else {
+		utils.RespFail(c, "Invalid action")
+		return
+	}
+
+	if err := dao.ShareResumeUpdate(resumeId, isShared); err != nil {
+		utils.RespFail(c, "Failed to share resume data")
+		return
+	}
+
+	utils.RespSuccess(c, "Resume data shared successfully!")
+}
+
+func GetSharedResume(c *gin.Context) {
+	isAll := c.DefaultQuery("is_all", "false")
+	username, ok := c.Get("username")
+	if !ok {
+		utils.RespFail(c, "Username not found in context")
+		return
+	}
+	var resumeData []*model.ResumeData
+	var err error
+
+	// 根据 is_all 的值来判断查询条件
+	if isAll == "true" {
+		// 查询所有已分享的简历
+		resumeData, err = dao.GetSharedResume("")
+	} else {
+		// 查询当前用户的已分享简历
+		resumeData, err = dao.GetSharedResume(username.(string))
+	}
+
+	if err != nil {
+		utils.RespFail(c, "Failed to retrieve shared resume data")
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
 		"data":   resumeData,
