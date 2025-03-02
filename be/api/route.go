@@ -37,6 +37,7 @@ func InitRouter() {
 		UserRouter.GET("/resume/:resume_id", GetResumeFromId)
 		UserRouter.POST("/avatar/upload", AddUserAvatar)
 		UserRouter.GET("/avatar/load", GetUserAvatar)
+		UserRouter.GET("/resume/thumbnail/:resume_id", GetThumbnail)
 	}
 	r.Run(":8888")
 }

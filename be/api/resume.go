@@ -1,18 +1,26 @@
 package api
 
 import (
+	"bytes"
 	"demo/dao"
 	"demo/model"
 	"demo/utils"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func AddResume(c *gin.Context) {
 	var requestData struct {
 		ResumeData string `json:"resume_data"`
+		Thumbnail  string `json:"thumbnail"`
 	}
 
 	username, ok := c.Get("username")
@@ -39,15 +47,23 @@ func AddResume(c *gin.Context) {
 		return
 	}
 
-	// 解析resume_data，提取templateName
+	// 直接解析为 map[string]interface{}
 	var resumeJSON map[string]interface{}
 	if err := json.Unmarshal([]byte(requestData.ResumeData), &resumeJSON); err != nil {
-		utils.RespFail(c, "Invalid resume data")
+		utils.RespFail(c, "Invalid resume JSON")
 		return
 	}
 
 	templateName, ok := resumeJSON["templateName"].(string)
 	if !ok {
+		log.Printf("Invalid resume data: %v\n", resumeJSON)
+		utils.RespFail(c, "Invalid resume data")
+		return
+	}
+
+	ResumeName, ok := resumeJSON["resumeName"].(string)
+	if !ok {
+		log.Printf("Invalid resume data: %v\n", resumeJSON)
 		utils.RespFail(c, "Invalid resume data")
 		return
 	}
@@ -58,6 +74,7 @@ func AddResume(c *gin.Context) {
 		TemplateName: templateName,
 		Resume:       requestData.ResumeData,
 		IsShared:     false,
+		ResumeName:   ResumeName,
 	}
 
 	if err := dao.AddResumeData(resume); err != nil {
@@ -65,7 +82,35 @@ func AddResume(c *gin.Context) {
 		return
 	}
 
-	utils.RespSuccess(c, "Resume data saved successfully!")
+	CurrentResume, err := dao.GetResumeDataLatest()
+	if err != nil {
+		utils.RespFail(c, "Failed to retrieve current resume data")
+		return
+	}
+
+	resumeId := CurrentResume[len(CurrentResume)-1].ResumeId
+
+	var thumbnaiURL string
+	if requestData.Thumbnail != "" {
+		thumbnaiURL, err = uploadBase64ToOSS(requestData.Thumbnail, fmt.Sprintf("resume_%d_thumbnail.jpg", resumeId))
+		log.Println(thumbnaiURL)
+		if err != nil {
+			utils.RespFail(c, "Failed to upload thumbnail")
+			return
+		}
+
+		if err := dao.UpdateResumeThumbnail(resumeId, thumbnaiURL); err != nil {
+			utils.RespFail(c, "Failed to update resume thumbnail")
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Resume data added successfully!",
+		"data":   resumeId,
+		"url":    thumbnaiURL,
+	})
 }
 
 func GetResume(c *gin.Context) {
@@ -198,5 +243,77 @@ func GetSharedResume(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
 		"data":   resumeData,
+	})
+}
+
+func uploadBase64ToOSS(base64Str, filename string) (string, error) {
+	dao.LoadConfig()
+
+	ossEndpoint := viper.GetString("OSS.Endpoint")
+	ossAccessKey := viper.GetString("OSS.AccessKey")
+	ossSecretKey := viper.GetString("OSS.SecretKey")
+	ossBucketName := viper.GetString("OSS.BucketName")
+
+	// 🎯 解析 Base64 数据
+	dataIndex := strings.Index(base64Str, "base64,")
+	if dataIndex == -1 {
+		return "", fmt.Errorf("invalid base64 data")
+	}
+	base64Data := base64Str[dataIndex+7:] // 去掉前缀 "data:image/jpeg;base64,"
+
+	decoded, err := base64.StdEncoding.DecodeString(base64Data)
+	if err != nil {
+		return "", err
+	}
+
+	// 🎯 连接 OSS
+	client, err := oss.New(ossEndpoint, ossAccessKey, ossSecretKey)
+	if err != nil {
+		return "", err
+	}
+	bucket, err := client.Bucket(ossBucketName)
+	if err != nil {
+		return "", err
+	}
+
+	// 🎯 上传到 OSS
+	objectKey := "thumbnails/" + filename
+	err = bucket.PutObject(objectKey, bytes.NewReader(decoded))
+	if err != nil {
+		return "", err
+	}
+
+	// 🎯 返回文件 URL
+	url := fmt.Sprintf("https://yiiong.oss-cn-beijing.aliyuncs.com/%s", objectKey)
+	return url, nil
+}
+
+func GetThumbnail(c *gin.Context) {
+	resumeIdstr := c.Param("resume_id")
+	if resumeIdstr == "" {
+		utils.RespFail(c, "Resume ID is required")
+		return
+	}
+
+	resumeId, err := strconv.Atoi(resumeIdstr)
+	if err != nil {
+		utils.RespFail(c, "Invalid Resume ID")
+		return
+	}
+
+	url, err := dao.GetResumeThunailURL(resumeId)
+	if err != nil {
+		utils.RespFail(c, "Failed to retrieve resume data")
+		return
+	}
+
+	if url == "" {
+		utils.RespFail(c, "No thumbnail found")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"data":   url,
 	})
 }

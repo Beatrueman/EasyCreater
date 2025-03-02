@@ -102,11 +102,13 @@ export const getUserInfo = async () => {
   }
 };
 
-export const saveResume = async (resumeData: any) => {
+export const saveResume = async (resumeData: any, thumbnailDataUrl: string) => {
   try {
     const response = await axiosInstance.post(`/user/resume/save`, {
-      resume_data: JSON.stringify(resumeData), // 转换为 JSON 字符串
+      resume_data: JSON.stringify(resumeData), 
+      thumbnail: thumbnailDataUrl 
     });
+    console.log(response)
     return response.data;
   } catch (error) {
     console.error("保存简历失败:", error);
@@ -197,5 +199,30 @@ export const getAllSharedResume = async () => {
   } catch(error) {
     console.error("获取该用户已分享简历失败:", error);
     throw error;
+  }
+};
+
+// 上传缩略图到后端oss
+export const uploadThumbnail = async (resumeId: number, file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await axiosInstance.post(`/user/resume/thumbnail_upload/${resumeId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch(error) {
+    console.error("上传缩略图失败",error);
+  }
+};
+
+export const getThumbnail = async (resumeId: number) => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/thumbnail/${resumeId}`);
+    return response.data;
+  } catch(error) {
+    console.error("获取缩略图失败",error);
   }
 };

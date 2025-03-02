@@ -1,113 +1,138 @@
 <template>
     <main class="container">
-        <SideBar>
-            <ToggleSwitch 
-            :toggle-active="editing"
-            @switch-toggled="toggleEditMode" 
-            label="编辑模式" 
-            :defaultValue="false"/>   
-            <div>
-                <ExportPdf v-if="!editing" :resume-format="resumeFormat"/>
-            </div>
-            <div>
-                <span style="color: black;">简历格式</span>
-                <SelectInput 
-                    :options="[{'name':'a4', 'value':'a4'}, {'name':'信件', 'value':'letter'}]"
-                    :default-option="resumeFormat"
-                    @update-selection="resumeFormat = $event"
-                />
-            </div>
-            <div v-if="editing">
-                <div style="color: black; font-weight: bolder">左列</div>
-                    <div><ColorInput 
-                        label="标题颜色" 
-                        :default-color="colors.left.highlight"
-                        @color-changed="colors.left.highlight = $event" />
-                    </div>
-
-                    <div>
-                        <ColorInput 
-                        label="背景颜色" 
-                        
-                        @color-changed="colors.right.background = $event" />
-                    </div>
-                    
-                    <div><ColorInput 
-                        label="文本颜色" 
-                        :default-color="colors.right.text"
-                        @color-changed="colors.right.text = $event" />
-                    </div>
-
-                    <div style="color: black;">
-                        <PercentageInput 
-                            label="左列宽度控制"
-                            :min="20"
-                            :max="80"
-                            :current-value="widthRight"
-                            @percentage-changed="widthRight = $event"
-                            />
-                    </div>
-                <div style="color: black; font-weight: bolder">右列</div>
-                    <div><ColorInput 
-                        label="标题颜色" 
-                        :default-color="colors.right.highlight"
-                        @color-changed="colors.right.highlight = $event" />
-                    </div>
-
-                    <div>
-                        <ColorInput 
-                        label="背景颜色" 
-                        :default-color="colors.left.background"
-                        @color-changed="colors.left.background = $event" />
-                    </div>
-                    
-                    <div><ColorInput 
-                        label="文本颜色" 
-                        @color-changed="colors.left.text = $event" />
-                    </div>
-
-                    <div style="color: black;">
-                        <span>标题粗细</span>
-                        <SelectInput 
-                        @update-selection="headlineWeight = $event"
-                        :default-option="headlineWeight"
-                        :options="[{'name': '细', 'value': '300'}, {'name': '正常', 'value': '400'}, {'name': '粗', 'value': '600'}]"
-                        />
-                    </div>
-                    
-                    <div style="color: black; font-weight: bolder">头像控制</div>
-
-                    <div style="color: black;">
-                        <ToggleSwitch @switch-toggled="toggleImageDisplay" label="显示头像" :defaultValue="true"/>
-                    </div>
-
-                    <div style="color: black;">
-                        <span v-if="showImage">头像形状</span>
-                        <SelectInput 
-                        v-if="showImage"
-                        @update-selection="imageShape = $event"
-                        :default-option="imageShape"
-                        :options="[{'name': '方形', 'value': 'square'}, {'name': '圆形', 'value': 'circle'}]"
-                        />
-                    </div>
-
-                    <div style="color: black;">
-                        <span v-if="showImage">上传头像</span>
-                        <ImageUpload
-                        v-if="showImage"
-                        @image-changed="imgUrl = $event"
-                        />
-                    </div>
+        <div v-if="is_display">
+            <SideBar>
+                <ToggleSwitch 
+                :toggle-active="editing"
+                @switch-toggled="toggleEditMode" 
+                label="编辑模式" 
+                :defaultValue="false"/>   
+                <div>
+                    <ExportPdf v-if="!editing" :resume-format="resumeFormat"/>
                 </div>
-                
-        </SideBar>
-        <div style="color: black">
-            <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
-            <CustomButton btn-type="primary" 
-                        style="margin-bottom: 20px; margin-top: 0px;"
-                        @click="saveConfig()"
-                        >保存简历</CustomButton>
-            <AiPolish :fromTemplate="fromTemplate" />
+                <div>
+                    <span style="color: black;">简历格式</span>
+                    <SelectInput 
+                        :options="[{'name':'a4', 'value':'a4'}, {'name':'信件', 'value':'letter'}]"
+                        :default-option="resumeFormat"
+                        @update-selection="resumeFormat = $event"
+                    />
+                </div>
+                <div v-if="editing">
+                    <div style="color: black; font-weight: bolder">左列</div>
+                        <div><ColorInput 
+                            label="标题颜色" 
+                            :default-color="colors.left.highlight"
+                            @color-changed="colors.left.highlight = $event" />
+                        </div>
+
+                        <div>
+                            <ColorInput 
+                            label="背景颜色" 
+                            
+                            @color-changed="colors.right.background = $event" />
+                        </div>
+                        
+                        <div><ColorInput 
+                            label="文本颜色" 
+                            :default-color="colors.right.text"
+                            @color-changed="colors.right.text = $event" />
+                        </div>
+
+                        <div style="color: black;">
+                            <PercentageInput 
+                                label="左列宽度控制"
+                                :min="20"
+                                :max="80"
+                                :current-value="widthRight"
+                                @percentage-changed="widthRight = $event"
+                                />
+                        </div>
+                    <div style="color: black; font-weight: bolder">右列</div>
+                        <div><ColorInput 
+                            label="标题颜色" 
+                            :default-color="colors.right.highlight"
+                            @color-changed="colors.right.highlight = $event" />
+                        </div>
+
+                        <div>
+                            <ColorInput 
+                            label="背景颜色" 
+                            :default-color="colors.left.background"
+                            @color-changed="colors.left.background = $event" />
+                        </div>
+                        
+                        <div><ColorInput 
+                            label="文本颜色" 
+                            @color-changed="colors.left.text = $event" />
+                        </div>
+
+                        <div style="color: black;">
+                            <span>标题粗细</span>
+                            <SelectInput 
+                            @update-selection="headlineWeight = $event"
+                            :default-option="headlineWeight"
+                            :options="[{'name': '细', 'value': '300'}, {'name': '正常', 'value': '400'}, {'name': '粗', 'value': '600'}]"
+                            />
+                        </div>
+                        
+                        <div style="color: black; font-weight: bolder">头像控制</div>
+
+                        <div style="color: black;">
+                            <ToggleSwitch @switch-toggled="toggleImageDisplay" label="显示头像" :defaultValue="true"/>
+                        </div>
+
+                        <div style="color: black;">
+                            <span v-if="showImage">头像形状</span>
+                            <SelectInput 
+                            v-if="showImage"
+                            @update-selection="imageShape = $event"
+                            :default-option="imageShape"
+                            :options="[{'name': '方形', 'value': 'square'}, {'name': '圆形', 'value': 'circle'}]"
+                            />
+                        </div>
+
+                        <div style="color: black;">
+                            <span v-if="showImage">上传头像</span>
+                            <ImageUpload
+                            v-if="showImage"
+                            @image-changed="imgUrl = $event"
+                            />
+                        </div>
+                    </div>
+                    
+            </SideBar>
+            <div style="color: black">
+                <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
+                <CustomButton
+                            v-if="!editing" 
+                            btn-type="primary" 
+                            style="margin-bottom: 20px; margin-top: 0px;"
+                           @click="openDialog"
+                            >保存简历</CustomButton>
+                <AiPolish :fromTemplate="fromTemplate" />
+                <el-dialog
+                    v-model="dialogVisible"
+                    title="请输入简历名称"
+                    width="500"
+                    :before-close="handleClose"
+                >
+                <el-input 
+                    v-model="resumeName" 
+                    placeholder="建议以岗位名称命名，如“算法工程师”" 
+                    clearable 
+                />
+                    <template #footer>
+                    <div class="dialog-footer">
+                        <el-button @click="dialogVisible = false">取消</el-button>
+                        <el-button type="primary" @click="confirmSave">
+                        确定
+                        </el-button>
+                    </div>
+                    </template>
+                </el-dialog>
+
+            </div>
         </div>
             <div 
                 id="resume"
@@ -374,7 +399,7 @@ body {
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px 05px, rgba(0,0,0,0.3) 0px 8px 16px -8px;
     height: 297mm;
     width: 210mm;
-
+    min-width: 800px;
   }
 
   #resume ul {
@@ -452,35 +477,23 @@ import CustomButton from '../../components/CustomButton.vue';
 import { useRouter } from 'vue-router';
 import AiPolish from '../../components/AiPolish.vue';
 import { fetchResume, saveResume } from '../../apis/api';
+import html2canvas from 'html2canvas';
 
 const router = useRouter();
 
 export default {
     created() {
+
         const resumeIdStr = this.$route.query.resume_id
         this.resumeId = resumeIdStr ? Number(resumeIdStr) : null;
         console.log("从数据库加载简历",this.resumeId);
         this.loadFromDatabase(this.resumeId);
-        // if(this.resumeId) {
-        //     console.log("从数据库加载简历",this.resumeId);
-        //     this.loadFromDatabase(this.resumeId)
-        // } else {
-        //     console.log("从 localStorage 加载简历");
-        //     const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
-        //     if (savedResume) {
-        //         try {
-        //             const resume = JSON.parse(savedResume);
-        //             // 只有当来源模板匹配时，才加载数据
-        //             if (resume.fromTemplate === this.templateName) {
-        //                 this.loadIntoData(resume);
-        //             } else {
-        //                 console.warn(`数据来自 ${resume.fromTemplate}，不匹配当前模板 ${this.templateName}`);
-        //             }
-        //         } catch (error) {
-        //             console.error("Error parsing saved resume configuration: ", error);
-        //         }
-        //     }
-        // }
+
+        const is_display_str = this.$route.query.is_display;
+        if (is_display_str !== undefined) {
+        // 将 is_display 转换为布尔值
+        this.is_display = is_display_str === 'true'; // 'true' 字符串转换为 true
+        }
     },
     components: {
         SectionHeadline,
@@ -585,10 +598,12 @@ export default {
             fromTemplate: "template2",
             aiResponse: "",    // AI 返回的数据
             loading: false,
-            resumeId: null,     
+            resumeId: null,
+            is_display: true, 
+            dialogVisible: false,
+            resumeName: "",   
         }
     },
-
     computed: {
         cssVariables() {
             return {
@@ -671,11 +686,21 @@ export default {
             this.showImage = value;
         },
         async saveConfig() {
-            const resumeData = JSON.stringify(this.$data)
-            localStorage.setItem(`resume_${this.fromTemplate}`, resumeData);
+            const { is_display, dialogVisible, ...resumeData } = this.$data; 
 
             try {
-                await saveResume(this.$data);
+                // 生成缩略图
+                const element = document.getElementById('resume');
+                if (!element) {
+                    console.error('未找到元素');
+                    return;
+                }
+
+                const canvas = await html2canvas(element, { scale: 5, width: element.scrollWidth });
+                const thumbnailDataUrl = canvas.toDataURL('image/jpeg'); // 获取base64
+
+                // 添加缩略图
+                await saveResume(resumeData, thumbnailDataUrl);
                 console.log('保存成功');
             } catch (error) {
                 console.error('保存失败:', error);
@@ -696,7 +721,6 @@ export default {
                 const resume = await fetchResume(resumeId);
                 if(resume) {
                     const parsedData = JSON.parse(resume[0].resume_data);
-                    console.log(resume[0].resume_data)
                     this.loadIntoData(parsedData);
                     
                     console.log('加载成功');
@@ -709,6 +733,24 @@ export default {
         },
         goToTemplate() {
             this.$router.push('/home/template');
+        },
+
+        openDialog() {
+            this.resumeName = "";
+            this.dialogVisible = true;
+        },
+
+        confirmSave() {
+            if (this.resumeName.trim() === '') {
+                alert('简历名称不能为空');
+                return;
+            }
+            this.saveConfig(this.resumeName);
+            this.dialogVisible = false;
+        },
+
+        handleClose() {
+            this.dialogVisible = false;
         },
     },
 }

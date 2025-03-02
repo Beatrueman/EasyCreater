@@ -14,7 +14,7 @@ import (
 var db *gorm.DB
 
 // 加载配置文件
-func loadConfig() {
+func LoadConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("config")
@@ -27,7 +27,7 @@ func InitMySQL() {
 	var err error
 
 	// 加载配置
-	loadConfig()
+	LoadConfig()
 
 	// 读取 MySQL 配置信息
 	host := viper.GetString("MySQL.host")
@@ -99,16 +99,11 @@ func InitMySQL() {
 		log.Println("Admin user already exists, no need to add.")
 	}
 
-	// 获取并初始化 添加 两个现有 简历模板
-	//err = ProcessVueFiles("dao/templates")
-	//if err != nil {
-	//	log.Fatalf("Error processing views: %v", err)
-	//}
 }
 
 func InitRedis() {
 	// 加载配置
-	loadConfig()
+	LoadConfig()
 
 	// 读取 Redis 配置信息
 	host := viper.GetString("Redis.host")

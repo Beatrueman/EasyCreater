@@ -16,17 +16,21 @@
                     :column="3"
                   >
                       <el-descriptions-item >
-                          <img
-                            :src="resume.template_name === 'template1' ? 'public/template1.jpg' : 'public/template2.jpg'"
-                            class="resume-preview-img"
-                            @click="handleClick(resume)"
+                        <img 
+                        :src="resume.thumbnailUrl" 
+                        class="template-preview-img" 
+                        alt="Resume Thumbnail"
+                        @click="handleClick(resume)"
                           />
                       </el-descriptions-item>
 
-                      <el-descriptions-item label="模板名称">
+                      <el-descriptions-item label="简历名称：">
+                        {{ resume.resume_name }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="来自模板：">
                         {{ resume.template_name }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="更新时间">
+                      <el-descriptions-item label="更新时间：">
                         {{ formatDate(resume.Timestamp) }}
                       </el-descriptions-item>
                       <el-descriptions-item>
@@ -84,16 +88,20 @@
                   >
                       <el-descriptions-item >
                           <img
-                            :src="resume.template_name === 'template1' ? 'public/template1.jpg' : 'public/template2.jpg'"
-                            class="resume-preview-img"
+                          :src="resume.thumbnailUrl" 
+                          class="template-preview-img" 
+                          alt="Resume Thumbnail"
                             @click="handleClick(resume)"
                           />
                       </el-descriptions-item>
 
-                      <el-descriptions-item label="模板名称">
+                      <el-descriptions-item label="简历名称：">
+                        {{ resume.resume_name }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="来自模板：">
                         {{ resume.template_name }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="更新时间">
+                      <el-descriptions-item label="更新时间：">
                         {{ formatDate(resume.Timestamp) }}
                       </el-descriptions-item>
                       <el-descriptions-item>
@@ -227,7 +235,7 @@ import { useRouter } from 'vue-router'
 import { UploadFilled } from '@element-plus/icons-vue'
 import { User, Medal, Delete, Promotion, Share } from '@element-plus/icons-vue'
 import AiResume from '../components/AiResume.vue'
-import { fetchResumeList, deleteResume, shareResume, getSharedResume } from '../apis/api'
+import { fetchResumeList, deleteResume, shareResume, getSharedResume, getThumbnail } from '../apis/api'
 import ChangePage from '../components/ChangePage.vue'
 
 interface ResumeData {
@@ -238,6 +246,8 @@ interface ResumeData {
   resume_data: string;
   Timestamp: string;
   IsShared: boolean;
+  thumbnailUrl?: string;
+  resume_name: string;
 }
 
 
@@ -247,7 +257,7 @@ const router = useRouter()
 const myResumes = ref<ResumeData[]>([]);
 const mySharedResumes = ref<ResumeData[]>([])
 const currentPage = ref(1);
-const pageSize = ref(3);
+const pageSize = ref(2);
 
 const goToTemplate = () => {
     router.push('/home/template')
@@ -274,8 +284,14 @@ const handlePageChange = (page: number) => {
 const fetchResumes = async () => {
   try {
     const res = await fetchResumeList()
-    console.log("API 返回数据:", res)
-    myResumes.value = res || []
+    if (res && Array.isArray(res)) {
+      // 获取所有简历的缩略图
+      for (const resume of res) {
+        const thumbnailUrl = await getThumbnail(resume.resume_id);
+        resume.thumbnailUrl = thumbnailUrl;  // 将缩略图URL赋值到简历数据
+      }
+      myResumes.value = res || [];
+    } 
   } catch(error) {
     console.error('Error fetching resumes:', error)
   }
@@ -351,8 +367,14 @@ const handleShare =  async (resumeId: number, isShare: string) => {
 const fetchSharedResumes = async () => {
   try {
     const res = await getSharedResume()
-    console.log("API 返回数据:", res)
-    mySharedResumes.value = res || []
+    if (res && Array.isArray(res)) {
+      // 获取所有简历的缩略图
+      for (const resume of res) {
+        const thumbnailUrl = await getThumbnail(resume.resume_id);
+        resume.thumbnailUrl = thumbnailUrl;  // 将缩略图URL赋值到简历数据
+      }
+      mySharedResumes.value = res;
+    } 
   } catch(error) {
     console.error('Error fetching resumes:', error)
   }
@@ -458,8 +480,8 @@ onMounted(() => {
 
 .resume-preview-img {
   margin: 5px;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   cursor: pointer;
   border-radius: 8px;
   transition: transform 0.2s ease-in-out;
