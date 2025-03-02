@@ -3,14 +3,14 @@ import Login from '../views/LoginPage.vue'
 import Regist from '../views/RegistPage.vue'
 import Home from '../views/HomePage.vue'
 import TemplatePage from '../views/TemplatePage.vue'
-import MakePage from '../views/MakePage.vue'
-import MakePageSecond from '../views/MakePageSecond.vue'
+import MakePage from '../views/pages/MakePage.vue'
+import MakePageSecond from '../views/pages/MakePageSecond.vue'
 import AboutPage from '../views/AboutPage.vue'
 import IndexPage from '../views/IndexPage.vue'
 import MyResumePage from '../views/MyResumePage.vue'
 import { jwtDecode } from 'jwt-decode'
-import { defineAsyncComponent } from 'vue';
-import { getTemplateData } from '../apis/api'
+import SharePage from '../views/SharePage.vue'
+
 
 const routes = [{ path: '/', name: 'login', component: Login },
                 { path: '/regist', name: 'regist', component: Regist },
@@ -22,15 +22,11 @@ const routes = [{ path: '/', name: 'login', component: Login },
                   },
                   { path: 'template/first', 
                     name: 'MakePage', 
-                    component: defineAsyncComponent(() => 
-                      getTemplateData(1)
-                    )
+                    component: MakePage,
                   },
                   { path: 'template/second', 
                     name: 'MakePageSecond', 
-                    component: defineAsyncComponent(() => 
-                      getTemplateData(2)
-                    )
+                    component: MakePageSecond,
                   },
                   { path: 'about', 
                     name: 'AboutPage', 
@@ -43,6 +39,10 @@ const routes = [{ path: '/', name: 'login', component: Login },
                   { path: 'my_resume', 
                     name: 'MyResumePage', 
                     component: MyResumePage
+                  },
+                  { path: 'share', 
+                    name: 'SharePage', 
+                    component: SharePage
                   },
                 ]},
 

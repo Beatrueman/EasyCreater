@@ -29,6 +29,15 @@ func InitRouter() {
 		UserRouter.GET("/:userId/content", GetContent)
 		UserRouter.POST("/ask", QWenNormalChat)
 		UserRouter.POST("/ask_base", QWenNormalChatBase)
+		UserRouter.POST("/resume/save", AddResume)
+		UserRouter.GET("/resume/list", GetResume)
+		UserRouter.PUT("/resume/share/:resume_id", ShareResume)
+		UserRouter.GET("/resume/share", GetSharedResume) // 获取用户已分享的简历
+		UserRouter.DELETE("/resume/delete/:resume_id", DeleteResume)
+		UserRouter.GET("/resume/:resume_id", GetResumeFromId)
+		UserRouter.POST("/avatar/upload", AddUserAvatar)
+		UserRouter.GET("/avatar/load", GetUserAvatar)
+		UserRouter.GET("/resume/thumbnail/:resume_id", GetThumbnail)
 	}
 	r.Run(":8888")
 }

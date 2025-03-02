@@ -2,10 +2,12 @@ package api
 
 import (
 	"context"
+	"demo/dao"
 	"demo/utils"
 	"github.com/gin-gonic/gin"
 	easyllm "github.com/soryetong/go-easy-llm"
 	"github.com/soryetong/go-easy-llm/easyai"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
 )
@@ -19,7 +21,15 @@ type AIResponse struct {
 	RequestId string `json:"request_id"`
 }
 
+//var (
+//	token = "sk-70afc0771fc44f01a42ed73e983a6547"
+//)
+
 func QWenNormalChat(c *gin.Context) {
+
+	dao.LoadConfig()
+
+	token := viper.GetString("token")
 
 	var req ResumeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -38,7 +48,7 @@ func QWenNormalChat(c *gin.Context) {
 		"max_tokens":  1500,
 	}
 
-	config := easyllm.DefaultConfig("sk-70afc0771fc44f01a42ed73e983a6547", easyai.ChatTypeQWen)
+	config := easyllm.DefaultConfig(token, easyai.ChatTypeQWen)
 	client := easyllm.NewChatClient(config).SetGlobalParams(globalParams)
 	resp, reply, err := client.NormalChat(context.Background(), &easyai.ChatRequest{
 		Model:   easyai.ChatModelQWenTurbo,
@@ -59,6 +69,10 @@ func QWenNormalChat(c *gin.Context) {
 }
 
 func QWenNormalChatBase(c *gin.Context) {
+
+	dao.LoadConfig()
+
+	token := viper.GetString("token")
 
 	var req ResumeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -85,7 +99,7 @@ func QWenNormalChatBase(c *gin.Context) {
 	}
 
 	log.Printf(Question)
-	config := easyllm.DefaultConfig("sk-70afc0771fc44f01a42ed73e983a6547", easyai.ChatTypeQWen)
+	config := easyllm.DefaultConfig(token, easyai.ChatTypeQWen)
 	client := easyllm.NewChatClient(config).SetGlobalParams(globalParams)
 	resp, reply, err := client.NormalChat(context.Background(), &easyai.ChatRequest{
 		Model:   easyai.ChatModelQWenTurbo,
@@ -96,8 +110,6 @@ func QWenNormalChatBase(c *gin.Context) {
 		utils.RespFail(c, "Error sending chat request")
 		return
 	}
-
-	//fmt.Printf("resp: %+v\n", resp)
 
 	// 返回建议
 	c.JSON(http.StatusOK, AIResponse{

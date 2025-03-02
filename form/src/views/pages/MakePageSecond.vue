@@ -1,171 +1,146 @@
 <template>
     <main class="container">
-        <SideBar>
-            <ToggleSwitch 
-            :toggle-active="editing"
-            @switch-toggled="toggleEditMode" 
-            label="编辑模式" 
-            :defaultValue="false"/>   
-            <div>
-                <ExportPdf v-if="!editing" :resume-format="resumeFormat"/>
-            </div>
-            <div>
-                <span style="color: black;">简历格式</span>
-                <SelectInput 
-                    :options="[{'name':'a4', 'value':'a4'}, {'name':'信件', 'value':'letter'}]"
-                    :default-option="resumeFormat"
-                    @update-selection="resumeFormat = $event"
-                />
-            </div>
-            <div v-if="editing">
-                <div style="color: black; font-weight: bolder">左列</div>
-                    <div><ColorInput 
-                        label="标题颜色" 
-                        :default-color="colors.left.highlight"
-                        @color-changed="colors.left.highlight = $event" />
-                    </div>
-
-                    <div>
-                        <ColorInput 
-                        label="背景颜色" 
-                        :default-color="colors.left.background"
-                        @color-changed="colors.left.background = $event" />
-                    </div>
-                    
-                    <div><ColorInput 
-                        label="文本颜色" 
-                        :default-color="colors.left.text"
-                        @color-changed="colors.left.text = $event" />
-                    </div>
-
-                    <div style="color: black;">
-                        <PercentageInput 
-                            label="左列宽度控制"
-                            :min="20"
-                            :max="80"
-                            :current-value="widthLeft"
-                            @percentage-changed="widthLeft = $event"
-                            />
-                    </div>
-                <div style="color: black; font-weight: bolder">右列</div>
-                    <div><ColorInput 
-                        label="标题颜色" 
-                        :default-color="colors.right.highlight"
-                        @color-changed="colors.right.highlight = $event" />
-                    </div>
-
-                    <div>
-                        <ColorInput 
-                        label="背景颜色" 
-                        @color-changed="colors.right.background = $event" />
-                    </div>
-                    
-                    <div><ColorInput 
-                        label="文本颜色" 
-                        :default-color="colors.right.text"
-                        @color-changed="colors.right.text = $event" />
-                    </div>
-
-                    <div style="color: black;">
-                        <span>标题粗细</span>
-                        <SelectInput 
-                        @update-selection="headlineWeight = $event"
-                        :default-option="headlineWeight"
-                        :options="[{'name': '细', 'value': '300'}, {'name': '正常', 'value': '400'}, {'name': '粗', 'value': '600'}]"
-                        />
-                    </div>
-                    
-                    <div style="color: black; font-weight: bolder">头像控制</div>
-
-                    <div style="color: black;">
-                        <ToggleSwitch @switch-toggled="toggleImageDisplay" label="显示头像" :defaultValue="true"/>
-                    </div>
-
-                    <div style="color: black;">
-                        <span v-if="showImage">头像形状</span>
-                        <SelectInput 
-                        v-if="showImage"
-                        @update-selection="imageShape = $event"
-                        :default-option="imageShape"
-                        :options="[{'name': '方形', 'value': 'square'}, {'name': '圆形', 'value': 'circle'}]"
-                        />
-                    </div>
-
-                    <div style="color: black;">
-                        <span v-if="showImage">上传头像</span>
-                        <ImageUpload
-                        v-if="showImage"
-                        @image-changed="imgUrl = $event"
-                        />
-                    </div>
+        <div v-if="is_display">
+            <SideBar>
+                <ToggleSwitch 
+                :toggle-active="editing"
+                @switch-toggled="toggleEditMode" 
+                label="编辑模式" 
+                :defaultValue="false"/>   
+                <div>
+                    <ExportPdf v-if="!editing" :resume-format="resumeFormat"/>
                 </div>
-                
-        </SideBar>
-        <div style="color: black">
-            <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
-            <CustomButton btn-type="primary" 
-                        style="margin-bottom: 20px; margin-top: 0px;"
-                        @click="saveConfig('template1')"
-                        >保存简历</CustomButton>
-            <AiPolish :fromTemplate="fromTemplate" />
+                <div>
+                    <span style="color: black;">简历格式</span>
+                    <SelectInput 
+                        :options="[{'name':'a4', 'value':'a4'}, {'name':'信件', 'value':'letter'}]"
+                        :default-option="resumeFormat"
+                        @update-selection="resumeFormat = $event"
+                    />
+                </div>
+                <div v-if="editing">
+                    <div style="color: black; font-weight: bolder">左列</div>
+                        <div><ColorInput 
+                            label="标题颜色" 
+                            :default-color="colors.left.highlight"
+                            @color-changed="colors.left.highlight = $event" />
+                        </div>
+
+                        <div>
+                            <ColorInput 
+                            label="背景颜色" 
+                            
+                            @color-changed="colors.right.background = $event" />
+                        </div>
+                        
+                        <div><ColorInput 
+                            label="文本颜色" 
+                            :default-color="colors.right.text"
+                            @color-changed="colors.right.text = $event" />
+                        </div>
+
+                        <div style="color: black;">
+                            <PercentageInput 
+                                label="左列宽度控制"
+                                :min="20"
+                                :max="80"
+                                :current-value="widthRight"
+                                @percentage-changed="widthRight = $event"
+                                />
+                        </div>
+                    <div style="color: black; font-weight: bolder">右列</div>
+                        <div><ColorInput 
+                            label="标题颜色" 
+                            :default-color="colors.right.highlight"
+                            @color-changed="colors.right.highlight = $event" />
+                        </div>
+
+                        <div>
+                            <ColorInput 
+                            label="背景颜色" 
+                            :default-color="colors.left.background"
+                            @color-changed="colors.left.background = $event" />
+                        </div>
+                        
+                        <div><ColorInput 
+                            label="文本颜色" 
+                            @color-changed="colors.left.text = $event" />
+                        </div>
+
+                        <div style="color: black;">
+                            <span>标题粗细</span>
+                            <SelectInput 
+                            @update-selection="headlineWeight = $event"
+                            :default-option="headlineWeight"
+                            :options="[{'name': '细', 'value': '300'}, {'name': '正常', 'value': '400'}, {'name': '粗', 'value': '600'}]"
+                            />
+                        </div>
+                        
+                        <div style="color: black; font-weight: bolder">头像控制</div>
+
+                        <div style="color: black;">
+                            <ToggleSwitch @switch-toggled="toggleImageDisplay" label="显示头像" :defaultValue="true"/>
+                        </div>
+
+                        <div style="color: black;">
+                            <span v-if="showImage">头像形状</span>
+                            <SelectInput 
+                            v-if="showImage"
+                            @update-selection="imageShape = $event"
+                            :default-option="imageShape"
+                            :options="[{'name': '方形', 'value': 'square'}, {'name': '圆形', 'value': 'circle'}]"
+                            />
+                        </div>
+
+                        <div style="color: black;">
+                            <span v-if="showImage">上传头像</span>
+                            <ImageUpload
+                            v-if="showImage"
+                            @image-changed="imgUrl = $event"
+                            />
+                        </div>
+                    </div>
+                    
+            </SideBar>
+            <div style="color: black">
+                <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
+                <CustomButton
+                            v-if="!editing" 
+                            btn-type="primary" 
+                            style="margin-bottom: 20px; margin-top: 0px;"
+                           @click="openDialog"
+                            >保存简历</CustomButton>
+                <AiPolish :fromTemplate="fromTemplate" />
+                <el-dialog
+                    v-model="dialogVisible"
+                    title="请输入简历名称"
+                    width="500"
+                    :before-close="handleClose"
+                >
+                <el-input 
+                    v-model="resumeName" 
+                    placeholder="建议以岗位名称命名，如“算法工程师”" 
+                    clearable 
+                />
+                    <template #footer>
+                    <div class="dialog-footer">
+                        <el-button @click="dialogVisible = false">取消</el-button>
+                        <el-button type="primary" @click="confirmSave">
+                        确定
+                        </el-button>
+                    </div>
+                    </template>
+                </el-dialog>
 
             </div>
-
+        </div>
             <div 
                 id="resume"
                 class="d-flex" 
                 :class="{ 'edit-off': !editing, 'letter-format': resumeFormat == 'letter' }"
                 :style="cssVariables"
                 >
-                <div class="left-col" :style="{width: percentageWidthLeft}">
-                    <div class="resume-section">
-                        <img :src="imgUrl"
-                            v-if="showImage"
-                            class="profile-pic" 
-                            alt="profile picture"
-                            :class="{'circle': imageShape == 'circle'}"
-                            >
-                        
-                        <SectionHeadline :editing="editing" :headline="headlines[0]" @headline-edited="updateHeadline($event, 0)"/>
-                        
-                        <div 
-                            :contenteditable="editing" 
-                            @input="updateProperty($event, 'introText')">
-                            {{ introText }}
-                        </div>
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[1]" @headline-edited="updateHeadline($event, 1)"/>
-                        
-                        <Contact :editing="editing" :contact="contact" @edit="updateNestedProperty"/>
-                        
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
-                        <ul>
-                            <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
-                        </ul>
-                        <EditButtons
-                            :editing="editing"  
-                            @add-click="skills.push('编辑项')" 
-                            @remove-click="skills.pop()"
-                            :show-remove-button="skills.length > 0"
-                        />
-                    </div>
-                    <div class="resume-section">
-                        <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
-                        <ul>
-                            <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
-                        </ul>
-                        <EditButtons 
-                            :editing="editing"
-                            @add-click="honor.push('编辑项')" 
-                            @remove-click="honor.pop()"
-                            :show-remove-button="honor.length > 0"
-                        />
-                    </div>
-                </div>
-                <div class="right-col">
+                <div class="left-col">
                     <div 
                         class="name"
                         :contenteditable="editing" 
@@ -275,6 +250,54 @@
                         </div>
                     </div>
                 </div>
+                <div class="right-col" :style="{width: percentageWidthRight}">                    
+                    <div class="resume-section">
+                        <img :src="imgUrl"
+                            v-if="showImage"
+                            class="profile-pic" 
+                            alt="profile picture"
+                            :class="{'circle': imageShape == 'circle'}"
+                            >
+                        
+                        <SectionHeadline :editing="editing" :headline="headlines[0]" @headline-edited="updateHeadline($event, 0)"/>
+                        
+                        <div 
+                            :contenteditable="editing" 
+                            @input="updateProperty($event, 'introText')">
+                            {{ introText }}
+                        </div>
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[1]" @headline-edited="updateHeadline($event, 1)"/>
+                        
+                        <Contact :editing="editing" :contact="contact" @edit="updateNestedProperty"/>
+                        
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
+                        <ul>
+                            <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
+                        </ul>
+                        <EditButtons
+                            :editing="editing"  
+                            @add-click="skills.push('编辑项')" 
+                            @remove-click="skills.pop()"
+                            :show-remove-button="skills.length > 0"
+                        />
+                    </div>
+                    <div class="resume-section">
+                        <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
+                        <ul>
+                            <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
+                        </ul>
+                        <EditButtons 
+                            :editing="editing"
+                            @add-click="honor.push('编辑项')" 
+                            @remove-click="honor.pop()"
+                            :show-remove-button="honor.length > 0"
+                        />
+                    </div>
+                </div>
             </div>
     </main>
 </template>
@@ -295,9 +318,9 @@
 
   :root {
     --highlight-color-left: #82C0CC;
-    --background-color-left: #3943B7;
+    --background-color-left: #e0e0e0;
     --text-color-left: white;
-    --highlight-color-right: #3943B7;
+    --highlight-color-right: #82C0CC;
     --background-color-right: white;
     --text-color-right: black;
     --headline-weight: 600;
@@ -313,14 +336,14 @@ body {
     max-width: 1200px;
 }
 
-.left-col {
+.right-col {
     background-color: var(--background-color-left);
     color: var(--text-color-left);
     border-right: 1px sold var(--highlight-color-left);
     padding: 30px;
 }
 
-.right-col {
+.left-col {
     background: var(--background-color-right);
     color: var(--text-color-right);
     width: 70%;
@@ -353,8 +376,8 @@ body {
 
 .name {
     font-size: 28px;
-    color: var(--highlight-color-right);
-    border-bottom: 1px solid var(--highlight-color-right);
+    color: var(--highlight-color-left);
+    border-bottom: 1px solid var(--highlight-color-left);
     margin: 0;
     margin-left: -30px;
     padding-left: 30px;
@@ -376,7 +399,7 @@ body {
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px 05px, rgba(0,0,0,0.3) 0px 8px 16px -8px;
     height: 297mm;
     width: 210mm;
-
+    min-width: 800px;
   }
 
   #resume ul {
@@ -389,7 +412,7 @@ body {
     display: block;
     width: 160px;
     height: 160px;
-    border: 5px solid var(--highlight-color-left);
+    border: 5px solid var(--highlight-color-right);
     margin-bottom: 20px;
     object-fit: cover;
     margin-left: auto;
@@ -435,50 +458,42 @@ body {
     width: 8.5in;
     height: 11in;
 }
-
-.response-text {
-  white-space: pre-line; /* 保证换行 */
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-}
-
 </style>
 
 <script>
-import SectionHeadline from '../components/SectionHeadline.vue';
-import Contact from '../components/Contact.vue';
-import EditButtons from '../components/EditButtons.vue';
-import ToggleSwitch from '../components/ToggleSwitch.vue';
+import SectionHeadline from '../../components/SectionHeadline.vue';
+import Contact from '../../components/Contact.vue';
+import EditButtons from '../../components/EditButtons.vue';
+import ToggleSwitch from '../../components/ToggleSwitch.vue';
 import { fa } from 'element-plus/es/locales.mjs';
-import SideBar from '../components/SideBar.vue';
-import ColorInput from '../components/ColorInput.vue';
-import PercentageInput from '../components/PercentageInput.vue';
-import SelectInput from '../components/SelectInput.vue';
+import SideBar from '../../components/SideBar.vue';
+import ColorInput from '../../components/ColorInput.vue';
+import PercentageInput from '../../components/PercentageInput.vue';
+import SelectInput from '../../components/SelectInput.vue';
 import { Select, Upload } from '@element-plus/icons-vue';
-import ImageUpload from '../components/ImageUpload.vue';
-import ExportPdf from '../components/ExportPdf.vue';
-import CustomButton from '../components/CustomButton.vue';
+import ImageUpload from '../../components/ImageUpload.vue';
+import ExportPdf from '../../components/ExportPdf.vue';
+import CustomButton from '../../components/CustomButton.vue';
 import { useRouter } from 'vue-router';
-import AiPolish from '../components/AiPolish.vue';
+import AiPolish from '../../components/AiPolish.vue';
+import { fetchResume, saveResume } from '../../apis/api';
+import html2canvas from 'html2canvas';
 
 const router = useRouter();
 
 export default {
     created() {
-        const savedResume = localStorage.getItem(`resume_${this.fromTemplate}`);
-            if (savedResume) {
-                try {
-                    const resume = JSON.parse(savedResume);
-                    // 只有当来源模板匹配时，才加载数据
-                    if (resume.fromTemplate === this.templateName) {
-                        this.loadIntoData(resume);
-                    } else {
-                        console.warn(`数据来自 ${resume.fromTemplate}，不匹配当前模板 ${this.templateName}`);
-                    }
-                } catch (error) {
-                    console.error("Error parsing saved resume configuration: ", error);
-                }
-            }
+
+        const resumeIdStr = this.$route.query.resume_id
+        this.resumeId = resumeIdStr ? Number(resumeIdStr) : null;
+        console.log("从数据库加载简历",this.resumeId);
+        this.loadFromDatabase(this.resumeId);
+
+        const is_display_str = this.$route.query.is_display;
+        if (is_display_str !== undefined) {
+        // 将 is_display 转换为布尔值
+        this.is_display = is_display_str === 'true'; // 'true' 字符串转换为 true
+        }
     },
     components: {
         SectionHeadline,
@@ -491,18 +506,19 @@ export default {
         SelectInput,
         ImageUpload,
         ExportPdf,
-        CustomButton
+        CustomButton,
+        AiPolish
     },
     data() {
         return {
             colors: {
                 left: {
                     highlight: '#82C0CC',
-                    text: 'white',
-                    background: '#3943B7'
+                    text: 'black',
+                    background: '#F9DF7A'
                 },
                 right: {
-                    highlight: '#3943B7',
+                    highlight: '#303030',
                     text: 'black',
                     background: 'white'
                 },
@@ -574,18 +590,20 @@ export default {
             }],
             editing: false,
             showImage: true,
-            drawer: false,
-            widthLeft: 30,
+            widthRight: 30,
             imageShape: "circle",
             headlineWeight: "400",
             resumeFormat: 'a4',
-            templateName: "template1",
-            fromTemplate: "template1",
+            templateName: "template2",
+            fromTemplate: "template2",
             aiResponse: "",    // AI 返回的数据
-            loading: false     // 加载状态
+            loading: false,
+            resumeId: null,
+            is_display: true, 
+            dialogVisible: false,
+            resumeName: "",   
         }
     },
-
     computed: {
         cssVariables() {
             return {
@@ -598,8 +616,8 @@ export default {
                 '--headline-weight': this.headlineWeight,
             }
         },
-        percentageWidthLeft() {
-            return this.widthLeft + '%';
+        percentageWidthRight() {
+            return this.widthRight + '%';
         }  
     },
     methods: {
@@ -667,9 +685,26 @@ export default {
         toggleImageDisplay(value) {
             this.showImage = value;
         },
-        saveConfig(templateName) {
-            this.fromTemplate = templateName;
-            localStorage.setItem(`resume_${this.fromTemplate}`, JSON.stringify(this.$data))
+        async saveConfig() {
+            const { is_display, dialogVisible, ...resumeData } = this.$data; 
+
+            try {
+                // 生成缩略图
+                const element = document.getElementById('resume');
+                if (!element) {
+                    console.error('未找到元素');
+                    return;
+                }
+
+                const canvas = await html2canvas(element, { scale: 5, width: element.scrollWidth });
+                const thumbnailDataUrl = canvas.toDataURL('image/jpeg'); // 获取base64
+
+                // 添加缩略图
+                await saveResume(resumeData, thumbnailDataUrl);
+                console.log('保存成功');
+            } catch (error) {
+                console.error('保存失败:', error);
+            }
         },
 
         loadIntoData(config) {
@@ -679,10 +714,44 @@ export default {
                 }
             }
         },
+
+        async loadFromDatabase(resumeId) {
+            console.log(`正在从数据库加载简历 ID: ${resumeId}`);
+            try {
+                const resume = await fetchResume(resumeId);
+                if(resume) {
+                    const parsedData = JSON.parse(resume[0].resume_data);
+                    this.loadIntoData(parsedData);
+                    
+                    console.log('加载成功');
+                } else {
+                    console.log('简历不存在');
+                }
+            } catch (error) {
+                console.error(`加载简历 ID ${resumeId} 失败:`, error);
+            }
+        },
         goToTemplate() {
             this.$router.push('/home/template');
         },
-    
+
+        openDialog() {
+            this.resumeName = "";
+            this.dialogVisible = true;
+        },
+
+        confirmSave() {
+            if (this.resumeName.trim() === '') {
+                alert('简历名称不能为空');
+                return;
+            }
+            this.saveConfig(this.resumeName);
+            this.dialogVisible = false;
+        },
+
+        handleClose() {
+            this.dialogVisible = false;
+        },
     },
 }
 </script>

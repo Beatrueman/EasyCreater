@@ -37,21 +37,21 @@
         class="el-menu-vertical-demo"
       >
       <el-menu-item index="1" @click="goToIndex">
-          <el-icon><setting /></el-icon>
+        <el-icon><House /></el-icon>
           <span>首页</span>
         </el-menu-item>
         <el-menu-item index="2" @click="goToTemplate">
-          <el-icon><setting /></el-icon>
+          <el-icon><Position /></el-icon>
           <span>新建简历</span>
         </el-menu-item>
         <el-menu-item index="3" @click="goToMyResume">
           <template #title>
-            <el-icon><location /></el-icon>
+            <el-icon><Document /></el-icon>
             <span>我的简历</span>
           </template>
         </el-menu-item>
-        <el-menu-item index="4">
-          <el-icon><location /></el-icon>
+        <el-menu-item index="4" @click="goToShare">
+          <el-icon><Guide /></el-icon>
           <span>简历广场</span>
         </el-menu-item>
       </el-menu>
@@ -105,7 +105,7 @@
 }
 
 .el-main {
-  background-color: #E9EEF3;
+  background-color: #ffffff;
   color: #333;
   text-align: center;
   line-height: 160px;
@@ -155,6 +155,7 @@ import { ref, onMounted } from 'vue';
 import { jwtDecode } from "jwt-decode";
 import { reactive, toRefs } from 'vue'
 import { useRouter } from 'vue-router';
+import { loadAvatar } from '../apis/api';
 
 const username = ref<string | null>(null);
 const router = useRouter();
@@ -178,15 +179,27 @@ const getUsernameFromToken = (): string | null => {
 };
 
 const state = reactive({
-  circleUrl:
-    'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
   squareUrl:
     'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
   sizeList: ['small', '', 'large'] as const,
 })
 
-const { circleUrl, squareUrl, sizeList } = toRefs(state)
+const { squareUrl, sizeList } = toRefs(state)
 
+const fetchAvatar = async () => {
+  try {
+  const response = await loadAvatar();
+  console.log(response);
+  
+  if (response.data) {
+    state.squareUrl = response.data;
+  } else {
+    state.squareUrl = 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'
+  }
+  } catch(error) {
+    console.error('加载头像失败:', error);
+  }
+};
 const logout = () => {
   localStorage.removeItem('jwt-token');
   localStorage.removeItem('resume');
@@ -198,9 +211,6 @@ const goToTemplate = () => {
   router.push('/home/template');  
 };
 
-const goToHome = () => {
-  router.push('/home'); 
-};
 
 const goToAbout = () => {
   router.push('/home/about'); 
@@ -214,4 +224,11 @@ const goToMyResume = () => {
   router.push('/home/my_resume'); 
 };
 
+const goToShare = () => {
+  router.push('/home/share'); 
+};
+
+onMounted(() => {
+  fetchAvatar()
+})
 </script>

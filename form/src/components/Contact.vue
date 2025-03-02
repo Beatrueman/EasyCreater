@@ -38,6 +38,7 @@ export default {
     height: 18px;
     width: 18px;
     border-color: white;
+    max-width: 18px;
 }
 
 .contact li {

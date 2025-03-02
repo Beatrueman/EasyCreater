@@ -23,6 +23,7 @@ func hashPassword(password string) (string, error) {
 }
 
 // 验证password
+
 func CheckPasswordHash(password, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(password), []byte(hash))
 }
@@ -172,6 +173,16 @@ func SelectAllUserInfo() ([]model.User, error) {
 	return users, nil
 }
 
+func SelectUsernameFromId(id uint64) (string, error) {
+	var user model.User
+	res := db.Where("id = ?", id).First(&user)
+	if res.Error != nil {
+		log.Printf("error select user: %v", res.Error)
+		return "", res.Error
+	}
+	return user.Username, nil
+}
+
 func SelectSingleUserInfo(username string) (model.User, error) {
 	var user model.User
 	res := db.Where("username = ?", username).First(&user)
@@ -180,4 +191,24 @@ func SelectSingleUserInfo(username string) (model.User, error) {
 		return user, res.Error
 	}
 	return user, nil
+}
+
+func AddUserAvatar(username, avatar string) error {
+	var user model.User
+	res := db.Model(&user).Where("username = ?", username).Update("avatar", avatar)
+	if res.Error != nil {
+		log.Printf("error add user: %v", res.Error)
+		return res.Error
+	}
+	return nil
+}
+
+func GetAvatarFromUsername(username string) (string, error) {
+	var user model.User
+	res := db.Where("username = ?", username).First(&user)
+	if res.Error != nil {
+		log.Printf("error get user: %v", res.Error)
+		return "", res.Error
+	}
+	return user.Avatar, nil
 }

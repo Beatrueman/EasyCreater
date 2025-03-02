@@ -21,6 +21,5 @@ func GetContentByUserID(userID uint) ([]*model.Content, error) {
 		log.Printf("Failed to get content: %v\n", res.Error)
 		return nil, res.Error
 	}
-
 	return content, nil
 }
