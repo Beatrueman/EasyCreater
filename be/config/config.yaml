@@ -1,12 +1,12 @@
 # 通义千问 token
-token: ""
+token: "sk-70afc0771fc44f01a42ed73e983a6547"
 
 # 阿里云 oss 存储凭据
 OSS:
-  Endpoint: ""
-  AccessKey: ""
-  SecretKey: ""
-  BucketName: ""
+  Endpoint: "https://oss-cn-beijing.aliyuncs.com"
+  AccessKey: "LTAI5tEeRtTToKy6ZcR7e343"
+  SecretKey: "EfLjQGXI4npm 1AtJOCEDffoL3hOoXW8cD"
+  BucketName: "yiiong"21
 
 # 管理员账户
 username: admin
@@ -16,7 +16,7 @@ phone: 15592282002
 
 # MySQL数据库配置
 MySQL:
-  host: 172.22.160.228
+  host: 192.168.218.140
   port: 3306
   database: demo
   user: root

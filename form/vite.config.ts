@@ -6,7 +6,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
   server: {
-    allowedHosts: ['6e8c-2409-8961-1f4a-bdc6-bcb8-5f45-fc3b-2cb.ngrok-free.app'],
+    allowedHosts: ['b390-2409-8961-1f9c-213-8cd-1e14-621e-df51.ngrok-free.app'],
   },
   // ...
   plugins: [
