@@ -1,4 +1,4 @@
-# EasyCreater（易创）——一站式简历生成器
+# EasyCreater（易创）—— 一站式简历生成器
 
 ## 简介
 
