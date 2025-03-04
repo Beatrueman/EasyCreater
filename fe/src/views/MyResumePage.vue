@@ -142,7 +142,7 @@
           <!-- 模板列表容器 -->
           <div class="template-list">
             <div class="template-item-container">
-              <div class="template-preview" @click="goToMakePage">
+              <div class="template-preview" @click="goToMakePage(0)">
                 <img src="/public/template1.jpg" class="template-preview-img">
               </div>
               <div class="template-title">
@@ -151,7 +151,7 @@
             </div>
 
             <div class="template-item-container">
-              <div class="template-preview" @click="goToMakePageSecond">
+              <div class="template-preview" @click="goToMakePageSecond(0)">
                 <img src="/public/template2.jpg" class="template-preview-img">
               </div>
               <div class="template-title">

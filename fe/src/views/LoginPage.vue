@@ -67,6 +67,7 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { Login } from '../apis/api'
 import type { ElForm } from 'element-plus'
+import { AxiosError } from "axios";
 
 const router = useRouter() 
 
@@ -95,9 +96,9 @@ const submitForm = async () => {
     // 调用注册API并获取响应
     const response = await Login(form.value);
 
-    if (response && response.msg) {
+    if (response) {
       // 将 token 存储到 localStorage 中
-      localStorage.setItem('jwt-token', response.msg);
+      localStorage.setItem('jwt-token', response.data.msg);
 
       // 显示成功提示框
       alertVisible.value = true;
@@ -115,8 +116,12 @@ const submitForm = async () => {
     console.error('登录失败:', error);
 
     // 错误处理：获取后端返回的错误信息
-    if (error && error.response && error.response.msg) {
-      alertErrorMessage.value = error.response.msg;  // 显示后端返回的错误信息
+    if (error) {
+      const err = error as AxiosError;
+      const data = err.response?.data as { msg?: string } || {}; // 这里断言 data 类型
+      alertErrorMessage.value = data.msg || "Unknown error";
+
+      //alertErrorMessage.value = error.response.data.msg; // 显示后端返回的错误信息
     } else {
       alertErrorMessage.value = "登录失败，请重试！";  // 如果没有返回错误信息，显示通用错误信息
     }

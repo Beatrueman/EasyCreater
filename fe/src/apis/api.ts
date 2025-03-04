@@ -147,7 +147,7 @@ export const deleteResume = async (resumeId: number) => {
   }
 };
 
-export const uploadAvatar = async (ImgBase64String: Base64URLString) => {
+export const uploadAvatar = async (ImgBase64String: string) => {
   try {
     const response = await axiosInstance.post(`/user/avatar/upload`, {
       "avatar": ImgBase64String,

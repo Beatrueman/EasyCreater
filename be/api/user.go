@@ -131,7 +131,13 @@ func login(c *gin.Context) {
 		utils.RespFail(c, "Error generating token")
 		return
 	}
-	utils.RespSuccess(c, tokenString)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"data": gin.H{
+			"msg": tokenString,
+		},
+	})
+
 }
 
 func deleteUser(c *gin.Context) {

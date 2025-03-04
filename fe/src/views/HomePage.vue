@@ -184,7 +184,7 @@ const state = reactive({
   sizeList: ['small', '', 'large'] as const,
 })
 
-const { squareUrl, sizeList } = toRefs(state)
+const { squareUrl } = toRefs(state)
 
 const fetchAvatar = async () => {
   try {

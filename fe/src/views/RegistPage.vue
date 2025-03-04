@@ -79,7 +79,7 @@
   import type { ElForm } from 'element-plus'
   import { Register } from '../apis/api'
 
-  import { AxiosError, type AxiosResponse } from 'axios'
+  import { AxiosError } from 'axios'
 
   const router = useRouter() 
   

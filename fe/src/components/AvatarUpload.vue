@@ -115,7 +115,7 @@ const beforeAvatarUpload = (file: File): boolean => {
 };
 
 
-const handleAvatarSuccess = (response: any, file: File) => {
+const handleAvatarSuccess = (response: any) => {
   console.log("上传成功:", response);
 };
 </script>
