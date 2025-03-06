@@ -3,11 +3,12 @@ import axios from 'axios';
 
 // 创建 Axios 实例
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888/api',  // 后端 API 地址
+  //baseURL: import.meta.env.VITE_API_SERVER || 'http://localhost:8888/api',
+  baseURL: '/api',
   timeout: 50000,  // 请求超时时间
 });
 
-// 请求拦截器（如果需要加上 token 等信息）
+// 请求拦截器）
 axiosInstance.interceptors.request.use(
   (config) => {
     // 获取本地存储的 token
