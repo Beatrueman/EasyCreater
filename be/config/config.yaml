@@ -9,22 +9,15 @@ OSS:
   BucketName: ""
 
 # 管理员账户
-username: admin
-password: 123456
-email: 1783172311@qq.com
-phone: 15592282002
+username: "admin"
+password: "123456"
+email: ""
+phone: ""
 
 # MySQL数据库配置
 MySQL:
   host: mysql
   port: 3306
-  database: demo
-  user: root
-  password: 123456
-
-# Redis配置
-Redis:
-  host: 192.168.10.104
-  port: 63790
-  password: 123456
-  DB: 0
+  database: "demo"
+  user: "root"
+  password: "123456"

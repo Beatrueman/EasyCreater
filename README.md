@@ -83,8 +83,85 @@
 
 ## 部署
 
-#### Linux单机部署
+建议使用docker-compose部署，方便快捷
 
-#### Docker compose一键部署
+### Linux单机部署
 
-#### Kubernetes部署
+本项目提供了一键启动脚本`start.sh`
+
+**环境准备**
+
+- Linux
+- Golang1.23
+- Node.js 20
+- Nginx
+- MySQL
+- [通义大模型_企业拥抱 AI 时代首选-阿里云](https://www.aliyun.com/product/tongyi)
+- [阿里云 对象存储OSS_](https://www.aliyun.com/activity/purchase/storage?utm_content=se_1020490232)
+
+***如何开始？***
+
+```
+chmod +x start.sh
+./start.sh
+```
+
+### Docker compose一键部署
+
+本项目支持 `docker-compose` 一键部署
+
+**注意**
+
+- 运行前需要填写 `be/config/config.yaml`，其中`MySQL.host`请填写 `mysql`，如果要使用外部MySQL，请修改相关配置。
+- 按照如下配置，项目启动后，前端运行在`8080`端口，后端运行在`8888`端口。如果启动后提示端口占用，请自行修改端口`ports`
+
+```
+version: '3'
+
+services:
+  mysql:
+    image: mysql:latest
+    # 确保与config.yaml中填写的信息一致
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: demo
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    networks:
+      - EasyCreater-network
+
+  frontend:
+    build:
+      context: ./fe
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - EasyCreater-network
+
+  backend:
+    build:
+      context: ./be
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./be/config/config.yaml:/config/config.yaml
+    depends_on:
+      - mysql
+    networks:
+      - EasyCreater-network
+
+networks:
+  EasyCreater-network:
+    driver: bridge
+```
+
+***如何开始？***
+
+```
+docker-compose up -d
+```
+
+### Kubernetes部署

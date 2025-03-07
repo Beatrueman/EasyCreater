@@ -28,7 +28,7 @@
                       closable
                       @close="alertErrorVisible = false" 
                       class="alert-position" />
-            <h2>欢迎使用EasyCreater</h2>
+            <h2 style="color: black;">欢迎使用EasyCreater</h2>
             <el-divider />
       <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="submitForm">
         <el-form-item prop="username">
