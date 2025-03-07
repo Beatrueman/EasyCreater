@@ -10,12 +10,17 @@ RUN go mod tidy
 COPY . .
 RUN go build -o main .
 
-# 运行环境
-FROM debian:stable-slim
+FROM debian:latest
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates netcat-traditional\
-    && update-ca-certificates
+RUN rm -rf /etc/apt/sources.list.d/debian.sources \ 
+    && echo "deb http://mirrors.aliyun.com/debian stable main contrib non-free" > /etc/apt/sources.list \
+    && echo "deb http://mirrors.aliyun.com/debian stable-updates main contrib non-free" >> /etc/apt/sources.list \
+    && echo "deb http://mirrors.aliyun.com/debian-security stable-security main contrib non-free" >> /etc/apt/sources.list \
+    && apt-get clean \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates netcat-traditional \
+    && update-ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /EasyCreater/main .
 COPY start.sh /start.sh
