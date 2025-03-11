@@ -18,7 +18,7 @@ jobs:
       name: registry-secret
     env:
       IMAGE_REGISTRY_SERVICE: ${{ vars.IMAGE_REGISTRY_SERVICE || 'docker.io' }}
-      IMAGE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY || 'beatrueman/easybanner' }}
+      IMAGE_BE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY || 'beatrueman/easycreater-fe' }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
@@ -35,18 +35,18 @@ jobs:
     # 构建镜像
     - name: Build the image
       run: |
-        docker build be/ -f be/Dockerfile --tag ${{ env.IMAGE_REGISTRY_SERVICE }}/${{ env.IMAGE_REPOSITORY }}:${{ inputs.version || github.ref_name }}
+        docker build be/ -f be/Dockerfile --tag ${{ env.IMAGE_REGISTRY_SERVICE }}/${{ env.IMAGE_BE_REPOSITORY }}:${{ inputs.version || github.ref_name }}
 
     # 推送镜像
     - name: Push the image
-      run: docker push ${{ env.IMAGE_REGISTRY_SERVICE }}/${{ env.IMAGE_REPOSITORY }}:${{ inputs.version || github.ref_name }}
+      run: docker push ${{ env.IMAGE_REGISTRY_SERVICE }}/${{ env.IMAGE_BE_REPOSITORY }}:${{ inputs.version || github.ref_name }}
   build-and-push-frontend:
     runs-on: ubuntu-latest
     environment:
       name: registry-secret
     env:
       IMAGE_REGISTRY_SERVICE: ${{ vars.IMAGE_REGISTRY_SERVICE || 'docker.io' }}
-      IMAGE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY || 'beatrueman/easybanner' }}
+      IMAGE_FE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY || 'beatrueman/easycreater-be' }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
@@ -63,9 +63,9 @@ jobs:
     # 构建镜像
     - name: Build the image
       run: |
-        docker build fe/ -f fe/Dockerfile --tag ${{ env.IMAGE_REGISTRY_SERVICE }}/${{ env.IMAGE_REPOSITORY }}:${{ inputs.version || github.ref_name }}
+        docker build fe/ -f fe/Dockerfile --tag ${{ env.IMAGE_REGISTRY_SERVICE }}/${{ env.IMAGE_FE_REPOSITORY }}:${{ inputs.version || github.ref_name }}
 
     # 推送镜像
     - name: Push the image
-      run: docker push ${{ env.IMAGE_REGISTRY_SERVICE }}/${{ env.IMAGE_REPOSITORY }}:${{ inputs.version || github.ref_name }}
+      run: docker push ${{ env.IMAGE_REGISTRY_SERVICE }}/${{ env.IMAGE_FE_REPOSITORY }}:${{ inputs.version || github.ref_name }}
     
