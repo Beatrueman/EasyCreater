@@ -71,7 +71,7 @@ func InitMySQL() {
 	log.Println("MySQL connected successfully!")
 
 	// 自动迁移
-	err = db.AutoMigrate(&model.User{}, &model.Content{}, &model.ResumeData{})
+	err = db.AutoMigrate(&model.User{}, &model.Content{}, &model.ResumeData{}, &model.LoadedResumeData{})
 	if err != nil {
 		log.Fatalf("Error creating tables: %v", err)
 	}

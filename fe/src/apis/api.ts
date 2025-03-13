@@ -226,3 +226,47 @@ export const getThumbnail = async (resumeId: number) => {
     console.error("获取缩略图失败",error);
   }
 };
+
+// 上传简历文件
+export const uploadResumeFile = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await axiosInstance.post(`/user/resume/upload`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch(error) {
+    console.error("上传简历文件失败",error);
+  }
+}
+
+// 获取简历文件
+export const getLoadedResumes = async () => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/get_loaded`);
+    return response.data;
+  } catch(error) {
+    console.error("获取简历文件失败",error);
+  }
+}
+
+export const deleteLoadedResume = async (resumeId: number) => {
+  try {
+    const response = await axiosInstance.delete(`/user/resume/delete_loaded/${resumeId}`);
+    return response;
+  } catch(error) {
+    console.error("删除简历文件失败",error);
+  }
+}
+
+export const getLoadedResumeURL = async (resumeId: number) => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/get_loaded_url/${resumeId}`);
+    return response.data;
+  } catch(error) {
+    console.error("获取简历文件失败",error);
+  }
+}

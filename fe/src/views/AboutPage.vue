@@ -1,23 +1,6 @@
 <template>
     <main class="container">
         <div>
-        <!-- <el-alert 
-                v-if="alertVisible" 
-                title="密码修改成功，请重新登录!" 
-                type="success" 
-                show-icon 
-                closable
-                @close="alertVisible = false" 
-                class="alert-position" />
-              
-                <el-alert 
-                v-if="alertErrorVisible" 
-                :title="alertErrorMessage"
-                type="error" 
-                show-icon 
-                closable
-                @close="alertErrorVisible = false" 
-                class="alert-position" /> -->
                 <AlertMessage 
                 v-model:visible="alertVisible"
                 message="密码修改成功，请重新登录!"

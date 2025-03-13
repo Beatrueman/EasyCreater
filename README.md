@@ -25,7 +25,9 @@
 🖨 **一键导出 PDF**
 - 支持简历导出为 PDF，方便打印或在线投递，确保格式美观、排版整齐，让求职更高效。
 
-## 页面展示
+📥 **多格式简历导入**
+
+- 支持导入 PDF、Word 及图片格式的简历，并提供云端存储，便捷管理已有简历。无论何时何地，用户都能随时访问、编辑和优化自己的简历，确保求职更高效、更从容。
 
 ![image-20250302190157153](https://gitee.com/beatrueman/images/raw/master/img/202503021901506.png)
 
@@ -165,3 +167,30 @@ docker-compose up -d
 ```
 
 ### Kubernetes部署
+
+### CI 自动化流水线部署支持
+
+添加了用于打包和推送镜像的**Github Action**
+
+使用时在Settings >> Secrets and varibles >> Actions中添加secrets 
+
+`REGISTRY_USERNAME`和`REGISTRY_PASSWORD`
+
+![image-20240915002948963](https://gitee.com/beatrueman/images/raw/master/img/202503111459911.png)
+
+如果要推送到类似Harbor的自建仓库，请添加varibles
+
+`IMAGE_REGISTRY_SERVICE`：默认为docker.io
+
+`IMAGE_FE_REPOSITORY`：默认为beatrueman/easycreater-fe
+
+`IMAGE_BE_REPOSITORY`：默认为beatrueman/easycreater-be
+
+推送时请指定**tag**，格式为`v1.0.0`，用于指定镜像版本
+
+```
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+或者手动指定**tag**

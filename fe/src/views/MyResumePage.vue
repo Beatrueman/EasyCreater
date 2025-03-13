@@ -133,6 +133,56 @@
 
               </div>
             </el-tab-pane>
+
+            <el-tab-pane label="我导入的" name="my-load">
+              <div class="resume-list">
+                <template v-if="myLoadedResumes.length > 0">
+                  <el-descriptions
+                    v-for="resume in paginatedLoadedResumes"
+                    :key="resume.resume_id"
+                    class="resume-item"
+                    :column="1"
+                  >
+                    
+                      <el-descriptions-item label="已上传的简历名称：">
+                        <el-tooltip content="点击下载" placement="top">
+                          <a :href="resume.url" target="_blank" style="color: #409EFF; text-decoration: none;">
+                            {{ resume.resume_name }}
+                          </a>
+                        </el-tooltip>
+                      </el-descriptions-item>
+                      <el-descriptions-item label="更新时间：">
+                        {{ formatDate(resume.Timestamp) }}
+                      </el-descriptions-item>
+                      <el-descriptions-item>
+                        <el-button class="btn"
+                          type="danger" 
+                          primary
+                          size="small" 
+                          @click="handleLoadedDelete(resume.resume_id)"
+                          >删除</el-button>
+
+                      </el-descriptions-item>
+                  </el-descriptions>
+                </template>
+
+                <template v-else>
+                  <div class="empty-state">
+                    <h4 style="margin-left: 10px;">还没有导入的简历哦~</h4>
+                  </div>
+                </template>
+
+                <div class="pagination-container">
+                  <ChangePage
+                  :total="mySharedResumes.length"
+                  :pageSize="pageSize"
+                  :currentPage="currentPage"
+                  @pageChange="handlePageChange"
+                  />
+                </div>
+
+              </div>
+            </el-tab-pane>
           </el-tabs>
           </div>
 
@@ -161,13 +211,30 @@
           </div>
         </el-tab-pane>
 
+        <div>
+                <AlertMessage 
+                v-model:visible="alertVisible"
+                message="上传成功"
+                type="success"
+                style="width: 50%;"
+                />
+                
+                <AlertMessage 
+                v-model:visible="alertErrorVisible"
+                :message="alertErrorMessage"
+                type="error"
+                style="width: 50%;"
+                />
+            </div>
+
         <el-tab-pane label="导入简历" name="load">
           <div class="template-item-container">
             <el-upload
-                class="upload-demo"
+                class="upload"
                 drag
-                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                :http-request="handleUpload"
                 multiple
+                :before-upload="beforeUpload"
             >
                 <el-icon class="el-icon--upload"><upload-filled /></el-icon>
                 <div class="el-upload__text">
@@ -175,7 +242,7 @@
                 </div>
                 <template #tip>
                 <div class="el-upload__tip">
-                    jpg/png 需要小于500Kb
+                    仅支持 word/pdf/jpg/png, 大小需要小于500Kb
                 </div>
                 </template>
             </el-upload>
@@ -209,7 +276,7 @@
                             v-model="form.describtion"
                             maxlength="512"
                             style="width: 480px;"
-                            placeholder="请输入您的个人描述"
+                            placeholder="请输入您的个人描述，越详细越好哦~"
                             show-word-limit
                             type="textarea"
                         />
@@ -235,8 +302,9 @@ import { useRouter } from 'vue-router'
 import { UploadFilled } from '@element-plus/icons-vue'
 import { User, Medal, Delete, Promotion, Share } from '@element-plus/icons-vue'
 import AiResume from '../components/AiResume.vue'
-import { fetchResumeList, deleteResume, shareResume, getSharedResume, getThumbnail } from '../apis/api'
+import { getLoadedResumeURL, deleteLoadedResume, getLoadedResumes, uploadResumeFile, fetchResumeList, deleteResume, shareResume, getSharedResume, getThumbnail } from '../apis/api'
 import ChangePage from '../components/ChangePage.vue'
+import AlertMessage from '../components/AlertMessage.vue'
 
 interface ResumeData {
   resume_id: number;
@@ -250,14 +318,29 @@ interface ResumeData {
   resume_name: string;
 }
 
+interface UploadParams {
+  file: File;
+}
+
+interface LoadedResumeData {
+  resume_name: string;
+  resume_id: number;
+  Timestamp: string;
+  url: string;
+}
+
 
 const activeNameLeft = ref('my-resume')
 const activeNameRight = ref('from-template')
 const router = useRouter()
 const myResumes = ref<ResumeData[]>([]);
 const mySharedResumes = ref<ResumeData[]>([])
+const myLoadedResumes = ref<LoadedResumeData[]>([])
 const currentPage = ref(1);
 const pageSize = ref(2);
+const alertVisible = ref(false);
+const alertErrorVisible = ref(false);
+const alertErrorMessage = ref('');
 
 const goToTemplate = () => {
     router.push('/home/template')
@@ -275,6 +358,13 @@ const paginatedSharedResumes = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize.value;
   const endIndex = startIndex + pageSize.value;
   return mySharedResumes.value.slice(startIndex, endIndex);
+});
+
+const paginatedLoadedResumes = computed(() => {
+  if (!myLoadedResumes.value) return []; 
+  const startIndex = (currentPage.value - 1) * pageSize.value;
+  const endIndex = startIndex + pageSize.value;
+  return myLoadedResumes.value.slice(startIndex, endIndex);
 });
 
 const handlePageChange = (page: number) => {
@@ -364,6 +454,20 @@ const handleShare =  async (resumeId: number, isShare: string) => {
   }
 }
 
+const handleLoadedDelete = async (resumeId: number) => {
+  try {
+    const result = await deleteLoadedResume(resumeId);
+    if (!result) {
+      console.error('Failed to delete resume.');
+      return;
+    }
+    // 刷新页面
+    myLoadedResumes.value = myLoadedResumes.value.filter(resume => resume.resume_id !== resumeId);
+  } catch(error) {
+    console.error('Error deleting resume:',error);
+  }
+}
+
 const fetchSharedResumes = async () => {
   try {
     const res = await getSharedResume()
@@ -380,9 +484,64 @@ const fetchSharedResumes = async () => {
   }
 }
 
+const handleUpload = async (params: UploadParams) => {
+  const file = params.file;
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await uploadResumeFile(file);
+    if (res.url) {
+      alertVisible.value = true;
+      setTimeout(() => { alertVisible.value = false; fetchLoadedResumes(); }, 3000);
+    } else {
+      throw new Error('Failed to upload resume file.');
+    }
+  } catch (error) {
+    console.error('Error uploading resume file:', error);
+    alertVisible.value = true;
+    alertErrorMessage.value = '上传文件失败！请重试'
+    setTimeout(() => { alertErrorVisible.value = false; }, 3000);
+  }
+};
+
+const beforeUpload = (file: File) => {
+  const isType = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/jpeg", "image/png"].includes(file.type);
+  const is500KB = file.size / 1024 <= 500;
+
+  if (!isType) {
+    alertErrorVisible.value = true;
+    alertErrorMessage.value = '请上传PDF、Word、JPEG或PNG格式的文件，且文件大小不超过500KB'
+    setTimeout(() => { alertErrorVisible.value = false; }, 3000);
+    return false;
+  } else if (!is500KB) {
+    alertErrorVisible.value = true;
+    alertErrorMessage.value = '文件大小不能超过500KB'
+    setTimeout(() => { alertErrorVisible.value = false; }, 3000);
+    return false;
+  }
+  return true
+};
+
+const fetchLoadedResumes = async () => {
+  try {
+    const res = await getLoadedResumes()
+    if (res && Array.isArray(res)) {
+      for (const resume of res) {
+        const Url = await getLoadedResumeURL(resume.resume_id);
+        resume.url = Url;  
+      }
+      myLoadedResumes.value = res || [];
+    } 
+  } catch(error) {
+    console.error('Error fetching LoadedResumes:', error)
+  } 
+}
+
 onMounted(() => {
   fetchResumes();
   fetchSharedResumes();
+  fetchLoadedResumes();
 });
 </script>
 

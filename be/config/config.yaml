@@ -11,8 +11,8 @@ OSS:
 # 管理员账户
 username: "admin"
 password: "123456"
-email: ""
-phone: ""
+email: "1"
+phone: "1"
 
 # MySQL数据库配置
 MySQL:

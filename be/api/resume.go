@@ -1,20 +1,16 @@
 package api
 
 import (
-	"bytes"
 	"demo/dao"
 	"demo/model"
 	"demo/utils"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
+	"time"
 )
 
 func AddResume(c *gin.Context) {
@@ -92,7 +88,7 @@ func AddResume(c *gin.Context) {
 
 	var thumbnaiURL string
 	if requestData.Thumbnail != "" {
-		thumbnaiURL, err = uploadBase64ToOSS(requestData.Thumbnail, fmt.Sprintf("resume_%d_thumbnail.jpg", resumeId))
+		thumbnaiURL, err = dao.UploadBase64ToOSS(requestData.Thumbnail, fmt.Sprintf("resume_%d_thumbnail.jpg", resumeId))
 		log.Println(thumbnaiURL)
 		if err != nil {
 			utils.RespFail(c, "Failed to upload thumbnail")
@@ -246,48 +242,6 @@ func GetSharedResume(c *gin.Context) {
 	})
 }
 
-func uploadBase64ToOSS(base64Str, filename string) (string, error) {
-	dao.LoadConfig()
-
-	ossEndpoint := viper.GetString("OSS.Endpoint")
-	ossAccessKey := viper.GetString("OSS.AccessKey")
-	ossSecretKey := viper.GetString("OSS.SecretKey")
-	ossBucketName := viper.GetString("OSS.BucketName")
-
-	// 🎯 解析 Base64 数据
-	dataIndex := strings.Index(base64Str, "base64,")
-	if dataIndex == -1 {
-		return "", fmt.Errorf("invalid base64 data")
-	}
-	base64Data := base64Str[dataIndex+7:] // 去掉前缀 "data:image/jpeg;base64,"
-
-	decoded, err := base64.StdEncoding.DecodeString(base64Data)
-	if err != nil {
-		return "", err
-	}
-
-	// 🎯 连接 OSS
-	client, err := oss.New(ossEndpoint, ossAccessKey, ossSecretKey)
-	if err != nil {
-		return "", err
-	}
-	bucket, err := client.Bucket(ossBucketName)
-	if err != nil {
-		return "", err
-	}
-
-	// 🎯 上传到 OSS
-	objectKey := "thumbnails/" + filename
-	err = bucket.PutObject(objectKey, bytes.NewReader(decoded))
-	if err != nil {
-		return "", err
-	}
-
-	// 🎯 返回文件 URL
-	url := fmt.Sprintf("https://yiiong.oss-cn-beijing.aliyuncs.com/%s", objectKey)
-	return url, nil
-}
-
 func GetThumbnail(c *gin.Context) {
 	resumeIdstr := c.Param("resume_id")
 	if resumeIdstr == "" {
@@ -309,6 +263,133 @@ func GetThumbnail(c *gin.Context) {
 
 	if url == "" {
 		utils.RespFail(c, "No thumbnail found")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"data":   url,
+	})
+}
+
+func uploadResume(c *gin.Context) {
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		utils.RespFail(c, "Failed to get file")
+		return
+	}
+	defer file.Close()
+
+	fileName := header.Filename
+	username, ok := c.Get("username")
+	if !ok {
+		utils.RespFail(c, "Username not found in context")
+		return
+	}
+
+	userIdStr, err := dao.SelectUserInfo(username.(string), "Id")
+	if err != nil {
+		utils.RespFail(c, "Failed to get user id")
+		return
+	}
+
+	userIdInt, err := strconv.ParseInt(userIdStr, 10, 64)
+	if err != nil {
+		utils.RespFail(c, "Failed to parse user id")
+		return
+	}
+
+	ossURL, err := dao.UploadToOSS(file, fileName, username.(string))
+	if err != nil {
+		utils.RespFail(c, "Failed to upload file")
+		return
+	}
+
+	loadedResume := model.LoadedResumeData{
+		Username:   username.(string),
+		URL:        ossURL,
+		UserID:     int(userIdInt),
+		ResumeName: fileName,
+		Timestamp:  time.Now(),
+	}
+
+	err = dao.AddLoadedResumeData(loadedResume)
+	if err != nil {
+		utils.RespFail(c, "Failed to add loaded resume data")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "File uploaded successfully!",
+		"data": gin.H{
+			"url": ossURL,
+		},
+	})
+}
+
+func GetLoadedResume(c *gin.Context) {
+	username, ok := c.Get("username")
+	if !ok {
+		utils.RespFail(c, "Username not found in context")
+		return
+	}
+
+	loadedResumeData, err := dao.GetLoadedResumeData(username.(string))
+	if err != nil {
+		utils.RespFail(c, "Failed to retrieve loaded resume data")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "File uploaded successfully!",
+		"data":   loadedResumeData,
+	})
+}
+
+func DeleteLoadedResume(c *gin.Context) {
+	resumeIdStr := c.Param("resume_id")
+	if resumeIdStr == "" {
+		utils.RespFail(c, "Resume ID is required")
+		return
+	}
+
+	resumeId, err := strconv.Atoi(resumeIdStr)
+	if err != nil {
+		utils.RespFail(c, "Invalid Resume ID")
+		return
+	}
+
+	err = dao.DeleteLoadedResumeData(resumeId)
+	if err != nil {
+		utils.RespFail(c, "Failed to delete loaded resume data")
+		return
+	}
+	utils.RespSuccess(c, "Loaded resume data deleted successfully!")
+}
+
+func GetLoadedResumeURL(c *gin.Context) {
+	resumeIdstr := c.Param("resume_id")
+	if resumeIdstr == "" {
+		utils.RespFail(c, "Resume ID is required")
+		return
+	}
+
+	resumeId, err := strconv.Atoi(resumeIdstr)
+	if err != nil {
+		utils.RespFail(c, "Invalid Resume ID")
+		return
+	}
+
+	url, err := dao.GetLoadedResumeURL(resumeId)
+	if err != nil {
+		utils.RespFail(c, "Failed to retrieve resume data")
+		return
+	}
+
+	if url == "" {
+		utils.RespFail(c, "No url found")
 		return
 	}
 

@@ -14,8 +14,9 @@ type User struct {
 	Phone    string `gorm:"column:phone;not null" form:"phone" json:"phone"`
 	Avatar   string `gorm:"column:avatar;not null" form:"avatar" json:"avatar"`
 	// 外键。定义与Content模型的关联，表示一个用户可以有多个内容
-	Contents   []Content    `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
-	ResumeData []ResumeData `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
+	Contents     []Content          `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
+	ResumeData   []ResumeData       `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
+	LoadedResume []LoadedResumeData `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
 }
 
 type Data struct {
@@ -36,11 +37,21 @@ type ResumeData struct {
 	ResumeName   string    `gorm:"column:resume_name;not null" json:"resume_name"`
 }
 
+type LoadedResumeData struct {
+	ResumeId   int       `gorm:"column:resume_id;primaryKey;autoIncrement" json:"resume_id"`
+	ResumeName string    `gorm:"column:resume_name;not null" json:"resume_name"`
+	Username   string    `gorm:"column:username;not null" json:"username"`
+	UserID     int       `gorm:"column:user_id;not null"`
+	URL        string    `gorm:"column:url;not null" json:"url"`
+	Timestamp  time.Time `gorm:"column:timestamp;default:CURRENT_TIMESTAMP;type:datetime;not null"`
+}
+
 type ChangePasswordRequest struct {
 	Password    string `json:"password" binding:"required"`
 	NewPassword string `json:"newPassword" binding:"required"`
 }
 
+// TODO 留言功能
 type Content struct {
 	ID        int       `gorm:"column:id;primaryKey;autoIncrement" json:"id"` // 标识每条留言，防止出现相同内容留言难以辨认的情况
 	UserID    int       `gorm:"column:user_id;not null"`                      // 添加UserID字段作为外键,保证每个Content关联一个User

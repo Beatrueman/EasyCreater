@@ -51,6 +51,7 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     ExportPdf: typeof import('./src/components/ExportPdf.vue')['default']
     ImageUpload: typeof import('./src/components/ImageUpload.vue')['default']
