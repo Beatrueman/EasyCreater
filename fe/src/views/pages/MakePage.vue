@@ -711,6 +711,7 @@ export default {
 
                 // 添加缩略图
                 await saveResume(resumeData, thumbnailDataUrl);
+                localStorage.setItem('resumeData', JSON.stringify(resumeData));
                 console.log('保存成功');
             } catch (error) {
                 console.error('保存失败:', error);

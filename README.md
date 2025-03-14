@@ -51,6 +51,14 @@
 
 ![image-20250302192331269](https://gitee.com/beatrueman/images/raw/master/img/202503021923331.png)
 
+**AI 简历内容生成**
+
+![image-20250314161044624](https://gitee.com/beatrueman/images/raw/master/img/202503141610734.png)
+
+**AI 简历润色**
+
+![image-20250314161150083](https://gitee.com/beatrueman/images/raw/master/img/202503141611199.png)
+
 ## 技术架构与部署支持
 
 > *EasyCreater，助力高效求职，提供强大技术支撑！ 🚀*

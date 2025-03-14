@@ -12,7 +12,7 @@
     <el-drawer v-model="drawer" title="AI优化建议" :with-header="false" size="40%">
       <div v-loading="loading">
         <span v-if="loading">正在生成优化建议...</span>
-        <span v-else class="response-text">{{ aiResponse }}</span>
+        <markdown-it v-else class="response-text" :source="aiResponse"></markdown-it>
       </div>
     </el-drawer>
   </template>
@@ -23,9 +23,10 @@
   import { MagicStick } from "@element-plus/icons-vue";
   import { askAIBase } from '../apis/api';
   import { useRouter } from "vue-router";
+  import MarkdownIt from "vue3-markdown-it";
   
   export default defineComponent({
-    components: { MagicStick },
+    components: { MagicStick, MarkdownIt },
     props: {
       resume_data: {
         type: String,
@@ -84,7 +85,6 @@
   
   <style scoped>
   .response-text {
-    white-space: pre-line; /* 保证换行 */
     font-family: Arial, sans-serif;
     line-height: 1.6;
   }

@@ -21,10 +21,6 @@ type AIResponse struct {
 	RequestId string `json:"request_id"`
 }
 
-//var (
-//	token = "sk-70afc0771fc44f01a42ed73e983a6547"
-//)
-
 func QWenNormalChat(c *gin.Context) {
 
 	dao.LoadConfig()

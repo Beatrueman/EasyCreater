@@ -7,7 +7,6 @@ OSS:
   AccessKey: ""
   SecretKey: ""
   BucketName: ""
-
 # 管理员账户
 username: "admin"
 password: "123456"
