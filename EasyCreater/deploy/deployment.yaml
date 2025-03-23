@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: easycreater-be
+  namespace: defalut
+  labels:
+    app: easycreater-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: easycreater-be
+  template:
+    metadata:
+      labels:
+        app: easycreater-be
+    spec:
+      volumes:
+        - name: easycreater-secret-config
+          secret:
+            secretName: easycreater-secret-config
+      containers:
+        - name: easycreater-be
+          image: beatrueman/easycreater-be:v1.0.1
+          volumeMounts:
+            - name: easycreater-secret-config
+              mountPath: /config/
+          ports:
+            - containerPort: 8888
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: easycreater-fe
+  namespace: defalut
+  labels:
+    app: easycreater-fe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: easycreater-fe
+  template:
+    metadata:
+      labels:
+        app: easycreater-fe
+    spec:
+      containers:
+        - name: easycreater-fe
+          image: beatrueman/easycreater-fe:v1.0.1
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: easycreater-mysql
+  namespace: defalut
+  labels:
+    app: easycreater-mysql
+spec:
+  serviceName: "easycreater-mysql"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: easycreater-mysql
+  template:
+    metadata:
+      labels:
+        app: easycreater-mysql
+    spec:
+      volumes:
+        - name: easycreater-secret-config
+          secret:
+            secretName: easycreater-secret-config
+      containers:
+        - name: easycreater-mysql
+          image: mysql:latest
+          volumeMounts:
+            - name: easycreater-secret-config
+              mountPath: /config 
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              export MYSQL_ROOT_PASSWORD=$(grep '^password:' /config/config.yaml | sed 's/password: //' | tr -d '"')
+              echo $(grep 'database:' /config/config.yaml | awk '{print $2}') 
+              exec /usr/local/bin/docker-entrypoint.sh mysqld
+          ports:
+            - containerPort: 3306
+
