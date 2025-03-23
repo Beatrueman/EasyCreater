@@ -41,7 +41,7 @@
 
 **我的简历**
 
-![image-20250314234945073](https://gitee.com/beatrueman/images/raw/master/img/202503142349206.png)
+![image-20250302191630773](https://gitee.com/beatrueman/images/raw/master/img/202503021916878.png)
 
 **简历广场**
 
@@ -59,17 +59,11 @@
 
 ![image-20250314161150083](https://gitee.com/beatrueman/images/raw/master/img/202503141611199.png)
 
-## 技术架构
+## 技术架构与部署支持
 
 > *EasyCreater，助力高效求职，提供强大技术支撑！ 🚀*
 
 **EasyCreater 采用前后端分离架构开发，支持多种灵活的部署方式，包括 Linux 服务器、Docker Compose 及 Kubernetes，确保高效稳定的运行。**
-
-### **架构图**
-
-![image-20250314235057152](https://gitee.com/beatrueman/images/raw/master/img/202503142350358.png)
-
-### 技术栈
 
 💻 **前端技术栈**
 
@@ -85,7 +79,7 @@
 
 ☁ **对象存储**
 
-- **阿里云 OSS** —— 负责存储简历缩略图和用户上传的已有简历，确保数据安全、访问高效。
+- **阿里云 OSS** —— 负责存储简历缩略图，确保数据安全、访问高效。
 
 🧠 **AI 智能支持**
 
@@ -181,6 +175,33 @@ docker-compose up -d
 ```
 
 ### Kubernetes部署
+
+如需使用 Kubernetes 部署，请 clone **cloud分支**
+
+**注意**
+
+- 部署前需要填写 `be/config/config.yaml`，其中`MySQL.host`请填写 `easycreater-mysql`，不建议使用外部数据库。
+
+***如何开始？***
+
+首先在项目根目录下，创建 Secret
+
+```
+kubectl create secret generic easycreater-secret-config --from-file=./be/config/config.yaml
+```
+
+然后执行
+
+```
+kubectl apply -f deploy/service.yaml
+kubectl apply -f deploy/deployment.yaml
+```
+
+如有域名解析需求，请先部署 **Traefk**，然后修改 ingressroute.yaml，最后执行
+
+```
+kubectl apply -f deploy/ingressroute.yaml
+```
 
 ### CI 自动化流水线部署支持
 

@@ -7,16 +7,17 @@ OSS:
   AccessKey: ""
   SecretKey: ""
   BucketName: ""
+
 # 管理员账户
 username: "admin"
 password: "123456"
-email: "1"
-phone: "1"
+email: ""
+phone: ""
 
 # MySQL数据库配置
 MySQL:
-  host: mysql
+  host: easycreater-mysql
   port: 3306
-  database: "demo"
-  user: "root"
-  password: "123456"
+  database: demo
+  user: root
+  password: 123456
