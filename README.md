@@ -182,6 +182,8 @@ docker-compose up -d
 
 ### Kubernetes部署
 
+请切换至**cloud分支**查看部署方法。
+
 ### CI 自动化流水线部署支持
 
 添加了用于打包和推送镜像的**Github Action**
