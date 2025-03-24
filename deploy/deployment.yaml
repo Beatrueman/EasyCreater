@@ -21,7 +21,7 @@ spec:
             secretName: easycreater-secret-config
       containers:
         - name: easycreater-be
-          image: beatrueman/easycreater-be:v1.0.1
+          image: beatrueman/easycreater-be:v1.0.2
           volumeMounts:
             - name: easycreater-secret-config
               mountPath: /config/
