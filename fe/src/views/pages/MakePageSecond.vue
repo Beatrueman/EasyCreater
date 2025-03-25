@@ -144,8 +144,8 @@
                     <div 
                         class="name"
                         :contenteditable="editing" 
-                        @input="updateProperty($event, 'name')">
-                        {{ name }}
+                        @input="updateProperty($event, 'Myname')">
+                        {{ Myname }}
                     </div>
                     <div 
                         class="job-title"
@@ -181,35 +181,35 @@
                         </div>
                     </div>
                     <div class="resume-section">
-                        <div class="d-flex">
-                            <SectionHeadline :editing="editing" :headline="headlines[5]" @headline-edited="updateHeadline($event, 5)"/>
-                            <EditButtons :editing="editing" :show-remove-button="false" @add-click="addProjectExperience"/>
-                        </div>
-                            <div v-for="(item, index) in project_experience" :key="index" class="inner-section relative-container">
-                            <div class="d-flex justify-content-between" style="font-weight: bolder;">
-                                <div :contenteditable="editing" @input="updateProperty($event, 'name')">{{ item.name }}</div>
-                                <div class="delete-button-container">
-                                <EditButtons :editing="editing" @remove-click="removeProjectExperience(index)" :show-add-button="false"/>
-                            </div>
-                            </div>
-                                <div class="d-flex justify-content-between">
-                                <div>技术栈：<span :contenteditable="editing" @input="updateProperty($event, 'name')">{{ item.tech_stack }}</span></div>
-                            </div>
-                            <ul>
-                                <li v-for="(desc, innerIndex) in item.description" 
-                                :key="innerIndex"
-                                :contenteditable="editing"
-                                @input="updateProjectDescription($event, index, innerIndex)"
-                                >{{ desc }}</li>
-                            </ul>
-                            <EditButtons 
-                            :editing="editing"
-                            @add-click="item.description.push('编辑项')" 
-                            @remove-click="item.description.pop()"
-                            :show-remove-button="item.description.length > 0"
-                        />
-                        </div>
+                    <div class="d-flex">
+                        <SectionHeadline :editing="editing" :headline="headlines[5]" @headline-edited="updateHeadline($event, 5)"/>
+                        <EditButtons :editing="editing" :show-remove-button="false" @add-click="addProjectExperience"/>
                     </div>
+                        <div v-for="(item, index) in project_experience" :key="index" class="inner-section relative-container">
+                        <div class="d-flex justify-content-between" style="font-weight: bolder;">
+                            <div :contenteditable="editing" @input="updateProject($event, 'name', index)">{{ item.name }}</div>
+                            <div class="delete-button-container">
+                            <EditButtons :editing="editing" @remove-click="removeProjectExperience(index)" :show-add-button="false"/>
+                        </div>
+                        </div>
+                            <div class="d-flex justify-content-between">
+                            <div>技术栈：<span :contenteditable="editing" @input="updateProject($event, 'tech_stack', index)">{{ item.tech_stack }}</span></div>
+                        </div>
+                        <ul>
+                            <li v-for="(desc, innerIndex) in item.description" 
+                            :key="innerIndex"
+                            :contenteditable="editing"
+                            @input="updateProjectDescription($event, index, innerIndex)"
+                            >{{ desc }}</li>
+                        </ul>
+                        <EditButtons 
+                        :editing="editing"
+                        @add-click="item.description.push('编辑项')" 
+                        @remove-click="item.description.pop()"
+                        :show-remove-button="item.description.length > 0"
+                    />
+                    </div>
+                </div>
                     <div class="resume-section">
                         <div class="d-flex">
                             <SectionHeadline :editing="editing" :headline="headlines[6]" @headline-edited="updateHeadline($event, 6)"/>
@@ -523,7 +523,7 @@ export default {
                     background: 'white'
                 },
             },
-            name: "Yiiong",
+            Myname: "Yiiong",
             title: "SRE工程师",
             introText: "个人介绍",
             imgUrl: '/avatar.png',
@@ -642,7 +642,10 @@ export default {
         updateEducationDescription(event, index1, index2) {
             this.experience[index1]['description'][index2] = event.target.innerText
         },
-        updateProjectExperience(event, index1, index2) {
+        updateProject(event, key, index) {
+            this.project_experience[index][key] = event.target.innerText
+        },
+        updateProjectDescription(event, index1, index2) {
             this.project_experience[index1]['description'][index2] = event.target.innerText
         },
         addExperience() {

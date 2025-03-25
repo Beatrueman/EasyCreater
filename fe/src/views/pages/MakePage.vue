@@ -194,8 +194,8 @@
                 <div 
                     class="name"
                     :contenteditable="editing" 
-                    @input="updateProperty($event, 'name')">
-                    {{ name }}
+                    @input="updateProperty($event, 'Myname')">
+                    {{ Myname }}
                 </div>
                 <div 
                     class="job-title"
@@ -237,13 +237,13 @@
                     </div>
                         <div v-for="(item, index) in project_experience" :key="index" class="inner-section relative-container">
                         <div class="d-flex justify-content-between" style="font-weight: bolder;">
-                            <div :contenteditable="editing" @input="updateProperty($event, 'name')">{{ item.name }}</div>
+                            <div :contenteditable="editing" @input="updateProject($event, 'name', index)">{{ item.name }}</div>
                             <div class="delete-button-container">
                             <EditButtons :editing="editing" @remove-click="removeProjectExperience(index)" :show-add-button="false"/>
                         </div>
                         </div>
                             <div class="d-flex justify-content-between">
-                            <div>技术栈：<span :contenteditable="editing" @input="updateProperty($event, 'name')">{{ item.tech_stack }}</span></div>
+                            <div>技术栈：<span :contenteditable="editing" @input="updateProject($event, 'tech_stack', index)">{{ item.tech_stack }}</span></div>
                         </div>
                         <ul>
                             <li v-for="(desc, innerIndex) in item.description" 
@@ -531,11 +531,11 @@ export default {
                     background: 'white'
                 },
             },
-            name: "Yiiong",
+            Myname: "Yiiong",
             title: "SRE工程师",
             introText: "个人介绍",
             imgUrl: '/avatar.png',
-            headlines: ["个人信息", "联系方式", "专业技能", "荣誉/证书", "教育经历", "项目经历", "工作经历"], // 修改了这里
+            headlines: ["个人信息", "联系方式", "专业技能", "荣誉/证书", "教育经历", "项目经历", "工作经历"], 
             honor: ["国家一等奖学金","HCIE认证"],
             contact: {
                 phone: "19823838711",
@@ -594,8 +594,9 @@ export default {
                     "1. 使用Vue 开发",
                     "2. 后端使用Go 开发",
                     "3. 在 Kubernetes 部署"
-                ]
-            }],
+                    ],
+                }
+            ],
             editing: false,
             showImage: true,
             drawer: false,
@@ -651,7 +652,10 @@ export default {
         updateEducationDescription(event, index1, index2) {
             this.experience[index1]['description'][index2] = event.target.innerText
         },
-        updateProjectExperience(event, index1, index2) {
+        updateProject(event, key, index) {
+            this.project_experience[index][key] = event.target.innerText
+        },
+        updateProjectDescription(event, index1, index2) {
             this.project_experience[index1]['description'][index2] = event.target.innerText
         },
         addExperience() {
