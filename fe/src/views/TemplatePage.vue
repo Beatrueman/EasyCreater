@@ -58,11 +58,11 @@ const activeName = ref('first')
 const router = useRouter()
 
 const goToMakePage = () => {
-  router.push('/home/template/first')
+  router.push({name: 'MakePage', query: {resume_id: -1}})
 }
 
 const goToMakePageSecond = () => {
-  router.push('/home/template/second')
+  router.push({name: 'MakePageSecond', query: {resume_id: -1}})
 }
 </script>
 

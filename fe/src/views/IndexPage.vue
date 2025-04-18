@@ -113,6 +113,7 @@
                 </div>
                 
                 <div class="right-section">
+                    <div class="demo-collapse-wrapper">
                         <h4>经验汇总</h4>
                         <div class="demo-collapse">
                             <el-collapse v-model="activeName" accordion style="font-weight: bold;">
@@ -169,6 +170,7 @@
                             </el-collapse-item>
                             </el-collapse>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -219,6 +221,13 @@ const selectedWords = computed(() => {
 </script>
 
 <style scoped>
+.demo-collapse-wrapper {
+  max-height: 500px;  
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px; /* 避免滚动条遮挡内容 */
+}
+
 .content {
     white-space: pre-line;
     text-align: left;
@@ -248,6 +257,7 @@ const selectedWords = computed(() => {
 }
 
 .right-section {
+    overflow: hidden;
     width: 70%;
     text-align: center;
     margin-top: -7vh;

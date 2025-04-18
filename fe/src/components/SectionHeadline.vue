@@ -1,7 +1,7 @@
 <template>
         <h4 class="section-headline" 
             :contenteditable="editing"
-            @input="notifyParent"
+            @blur="notifyParent"
             >
             {{ headline }}
         </h4>

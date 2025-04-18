@@ -9,9 +9,11 @@ import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"io"
 	"log"
 	"mime/multipart"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -309,6 +311,26 @@ func GetLoadedResumeURL(ResumeId int) (string, error) {
 		log.Println("生成签名 URL 失败:", err)
 		return "", err
 	}
+	log.Println("签名 URL:", signedURL)
 
 	return signedURL, nil
+}
+
+func GetIdea() ([]byte, error) {
+	// 读取idea.json
+	dir, _ := os.Getwd()
+	fmt.Println("当前运行目录是:", dir)
+
+	file, err := os.Open("idea.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return data, nil
 }

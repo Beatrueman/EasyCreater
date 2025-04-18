@@ -1,4 +1,9 @@
 {
+  "compilerOptions": {
+    // other options
+    "skipLibCheck": true, 
+     "moduleResolution": "Node"
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

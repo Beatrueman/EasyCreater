@@ -45,6 +45,7 @@ func InitRouter() {
 			UserRouter.GET("/resume/get_loaded", GetLoadedResume)
 			UserRouter.DELETE("/resume/delete_loaded/:resume_id", DeleteLoadedResume)
 			UserRouter.GET("/resume/get_loaded_url/:resume_id", GetLoadedResumeURL)
+			UserRouter.GET("/resume/get_idea", GetIdeaData)
 		}
 	}
 	r.Run(":8888")

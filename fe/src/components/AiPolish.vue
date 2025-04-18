@@ -3,7 +3,7 @@
       type="warning"
       plain
       style="margin-bottom: 20px; margin-top: 0px; margin-left: 530px;"
-      @click="openDrawer"
+      @click="handleClick"
       :loading="loading"
     >
       <el-icon><MagicStick /></el-icon> AI润色
@@ -34,7 +34,8 @@
         required: true,
       },
     },
-    setup(props) {
+    emits: ["saveResumeLocal"],
+    setup(props, { emit }) {
       const aiResponse = ref("");
       const loading = ref(false);
       const drawer = ref(false);
@@ -70,12 +71,20 @@
           loading.value = false;
         }
       };
+
+      const handleClick = async() => {
+        emit("saveResumeLocal");
+        setTimeout(() => {
+          openDrawer();
+        },100);
+      }
   
       return {
         aiResponse,
         loading,
         drawer,
         openDrawer,
+        handleClick,
       };
     },
   });

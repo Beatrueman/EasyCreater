@@ -6,7 +6,7 @@
 
 <style scoped>
 .sidebar {
-    width: 250px;
+    width: 300px;
     height: 550px;
     position: fixed;
     top: 85px;
