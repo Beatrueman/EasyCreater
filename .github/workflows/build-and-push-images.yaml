@@ -20,7 +20,7 @@ jobs:
       name: registry-secret
     env:
       IMAGE_REGISTRY_SERVICE: ${{ vars.IMAGE_REGISTRY_SERVICE || 'docker.io' }}
-      IMAGE_BE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY || 'beatrueman/easycreater-fe' }}
+      IMAGE_BE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY || 'beatrueman/easycreater-be' }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
@@ -48,7 +48,7 @@ jobs:
       name: registry-secret
     env:
       IMAGE_REGISTRY_SERVICE: ${{ vars.IMAGE_REGISTRY_SERVICE || 'docker.io' }}
-      IMAGE_FE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY || 'beatrueman/easycreater-be' }}
+      IMAGE_FE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY || 'beatrueman/easycreater-fe' }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
