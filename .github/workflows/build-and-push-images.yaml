@@ -1,6 +1,8 @@
 name: Build and Push Image
 
 on:
+  branch: 
+    - cloud
   push:
     tags:
     - 'v*'

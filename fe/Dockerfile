@@ -2,10 +2,7 @@ FROM node:20 AS build
 
 WORKDIR /app
 
-RUN npm config set registry https://registry.npmmirror.com
-
 COPY package.json package-lock.json ./
-RUN npm install vue-tsc --save-dev
 RUN npm install
 
 COPY . .

@@ -2,106 +2,107 @@
     <main class="container">
         <div v-if="is_display">
             <SideBar>
-                <ToggleSwitch 
-                :toggle-active="editing"
-                @switch-toggled="toggleEditMode" 
-                label="编辑模式" 
-                :defaultValue="false"/>   
-                <div>
-                    <ExportPdf v-if="!editing" :resume-format="resumeFormat"/>
-                </div>
-                <div>
-                    <span style="color: black;">简历格式</span>
-                    <SelectInput 
+                <el-tabs tab-position="right" style="height: 100%;" class="demo-tabs">
+                    <el-tab-pane label="编辑">
+                    <ToggleSwitch 
+                        :toggle-active="editing"
+                        @switch-toggled="toggleEditMode" 
+                        label="编辑模式" 
+                        :defaultValue="false"/>   
+
+                    <div>
+                        <ExportPdf v-if="!editing" :resume-format="resumeFormat"/>
+                    </div>
+
+                    <div>
+                        <span style="color: black;">简历格式</span>
+                        <SelectInput 
                         :options="[{'name':'a4', 'value':'a4'}, {'name':'信件', 'value':'letter'}]"
                         :default-option="resumeFormat"
                         @update-selection="resumeFormat = $event"
-                    />
-                </div>
-                <div v-if="editing">
-                    <div style="color: black; font-weight: bolder">左列</div>
-                        <div><ColorInput 
-                            label="标题颜色" 
-                            :default-color="colors.left.highlight"
-                            @color-changed="colors.left.highlight = $event" />
-                        </div>
+                        />
+                    </div>
 
-                        <div>
-                            <ColorInput 
-                            label="背景颜色" 
-                            :default-color="colors.left.background"
-                            @color-changed="colors.left.background = $event" />
-                        </div>
-                        
-                        <div><ColorInput 
-                            label="文本颜色" 
-                            :default-color="colors.left.text"
-                            @color-changed="colors.left.text = $event" />
-                        </div>
+                    <div v-if="editing">
+                        <div style="color: black; font-weight: bolder">左列</div>
+                        <ColorInput label="标题颜色" :default-color="colors.left.highlight" @color-changed="colors.left.highlight = $event" />
+                        <ColorInput label="背景颜色" :default-color="colors.left.background" @color-changed="colors.left.background = $event" />
+                        <ColorInput label="文本颜色" :default-color="colors.left.text" @color-changed="colors.left.text = $event" />
+                        <PercentageInput label="左列宽度控制" :min="20" :max="80" :current-value="widthLeft" @percentage-changed="widthLeft = $event" />
 
-                        <div style="color: black;">
-                            <PercentageInput 
-                                label="左列宽度控制"
-                                :min="20"
-                                :max="80"
-                                :current-value="widthLeft"
-                                @percentage-changed="widthLeft = $event"
-                                />
-                        </div>
-                    <div style="color: black; font-weight: bolder">右列</div>
-                        <div><ColorInput 
-                            label="标题颜色" 
-                            :default-color="colors.right.highlight"
-                            @color-changed="colors.right.highlight = $event" />
-                        </div>
+                        <div style="color: black; font-weight: bolder">右列</div>
+                        <ColorInput label="标题颜色" :default-color="colors.right.highlight" @color-changed="colors.right.highlight = $event" />
+                        <ColorInput label="背景颜色" :default-color="colors.right.background" @color-changed="colors.right.background = $event" />
+                        <ColorInput label="文本颜色" :default-color="colors.right.text" @color-changed="colors.right.text = $event" />
+                        <span>标题粗细</span>
+                        <SelectInput @update-selection="headlineWeight = $event" :default-option="headlineWeight" :options="[{'name': '细', 'value': '300'}, {'name': '正常', 'value': '400'}, {'name': '粗', 'value': '600'}]" />
 
-                        <div>
-                            <ColorInput 
-                            label="背景颜色" 
-                            @color-changed="colors.right.background = $event" />
-                        </div>
-                        
-                        <div><ColorInput 
-                            label="文本颜色" 
-                            :default-color="colors.right.text"
-                            @color-changed="colors.right.text = $event" />
-                        </div>
-
-                        <div style="color: black;">
-                            <span>标题粗细</span>
-                            <SelectInput 
-                            @update-selection="headlineWeight = $event"
-                            :default-option="headlineWeight"
-                            :options="[{'name': '细', 'value': '300'}, {'name': '正常', 'value': '400'}, {'name': '粗', 'value': '600'}]"
-                            />
-                        </div>
-                        
                         <div style="color: black; font-weight: bolder">头像控制</div>
-
-                        <div style="color: black;">
-                            <ToggleSwitch @switch-toggled="toggleImageDisplay" label="显示头像" :defaultValue="true"/>
+                        <ToggleSwitch @switch-toggled="toggleImageDisplay" label="显示头像" :defaultValue="true"/>
+                        <div v-if="showImage">
+                        <span style="color: black;">头像形状</span>
+                        <SelectInput @update-selection="imageShape = $event" :default-option="imageShape" :options="[{'name': '方形', 'value': 'square'}, {'name': '圆形', 'value': 'circle'}]" />
+                        <div>
+                        <span style="color: black;">上传头像</span>
                         </div>
-
-                        <div style="color: black;">
-                            <span v-if="showImage">头像形状</span>
-                            <SelectInput 
-                            v-if="showImage"
-                            @update-selection="imageShape = $event"
-                            :default-option="imageShape"
-                            :options="[{'name': '方形', 'value': 'square'}, {'name': '圆形', 'value': 'circle'}]"
-                            />
-                        </div>
-
-                        <div style="color: black;">
-                            <span v-if="showImage">上传头像</span>
-                            <ImageUpload
-                            v-if="showImage"
-                            @image-changed="imgUrl = $event"
-                            />
+                        <ImageUpload @image-changed="imgUrl = $event" />
                         </div>
                     </div>
-                    
+                    </el-tab-pane>
+
+                    <el-tab-pane label="灵感">
+                        <div class="infinite-scroll-wrapper" style="height: 500px; overflow: auto">
+                            
+                            <!-- 岗位相关 byRole -->
+                            <h3 style="color: black;">岗位相关</h3>
+                            <div v-for="(role, index) in words.byRole" :key="'role-' + index" class="mb-4">
+                            <h4 style="color: black;">{{ role.job }}</h4>
+                            <ul class="infinite-list">
+                                <li v-for="(item, idx) in role.items" :key="'role-item-' + index + '-' + idx" class="infinite-list-item">
+                                {{ item }}
+                                </li>
+                            </ul>
+                            </div>
+
+                            <!-- 动词 -->
+                            <h3 style="color: black;">动词</h3>
+                            <ul class="infinite-list">
+                            <li style="color: black;" v-for="(word, index) in words.verbs" :key="'verb-' + index" class="infinite-list-item">
+                                {{ word }}
+                            </li>
+                            </ul>
+
+                            <!-- 名词 -->
+                            <h3 style="color: black;">名词</h3>
+                            <ul class="infinite-list">
+                            <li style="color: black;" v-for="(word, index) in words.nouns" :key="'noun-' + index" class="infinite-list-item">
+                                {{ word }}
+                            </li>
+                            </ul>
+
+                            <!-- 形容词 -->
+                            <h3 style="color: black;">形容词</h3>
+                            <ul class="infinite-list">
+                            <li style="color: black;" v-for="(word, index) in words.adjectives" :key="'adj-' + index" class="infinite-list-item">
+                                {{ word }}
+                            </li>
+                            </ul>
+
+                            <!-- 权重词 -->
+                            <h3 style="color: black;">权重词</h3>
+                            <ul class="infinite-list">
+                            <li style="color: black;" v-for="(word, index) in words.weightWords" :key="'weight-' + index" class="infinite-list-item">
+                                {{ word }}
+                            </li>
+                            </ul>
+
+                        </div>
+                    </el-tab-pane>
+
+
+                </el-tabs>
             </SideBar>
+
             <div style="color: black">
                 <el-button type="primary" style="margin-bottom: 20px; margin-top: 0px;" @click="goToTemplate"><el-icon><Back /></el-icon>返回</el-button>
                 <CustomButton
@@ -110,7 +111,7 @@
                             style="margin-bottom: 20px; margin-top: 0px;"
                             @click="openDialog"
                             >保存简历</CustomButton>
-                <AiPolish :fromTemplate="fromTemplate" />
+                <AiPolish :fromTemplate="fromTemplate" @saveResumeLocal="saveResumeData"/>
 
                 <el-dialog
                     v-model="dialogVisible"
@@ -155,7 +156,7 @@
                     
                     <div 
                         :contenteditable="editing" 
-                        @input="updateProperty($event, 'introText')">
+                        @blur="updateProperty($event, 'introText')">
                         {{ introText }}
                     </div>
                 </div>
@@ -168,7 +169,7 @@
                 <div class="resume-section">
                     <SectionHeadline :editing="editing" :headline="headlines[2]" @headline-edited="updateHeadline($event, 2)"/>
                     <ul>
-                        <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
+                        <li v-for="(skill, index) in skills" :key="index" :contenteditable="editing" @blur="updateNestedProperty($event, 'skills', index)">{{ skill }}</li>
                     </ul>
                     <EditButtons
                         :editing="editing"  
@@ -180,7 +181,7 @@
                 <div class="resume-section">
                     <SectionHeadline :editing="editing" :headline="headlines[3]" @headline-edited="updateHeadline($event, 3)"/>
                     <ul>
-                        <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @input="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
+                        <li v-for="(h, index) in honor" :key="index" :contenteditable="editing" @blur="updateNestedProperty($event, 'honor', index)">{{ h }}</li>
                     </ul>
                     <EditButtons 
                         :editing="editing"
@@ -194,13 +195,13 @@
                 <div 
                     class="name"
                     :contenteditable="editing" 
-                    @input="updateProperty($event, 'Myname')">
+                    @blur="updateProperty($event, 'Myname')">
                     {{ Myname }}
                 </div>
                 <div 
                     class="job-title"
                     :contenteditable="editing"
-                    @input="updateProperty($event, 'title')">
+                    @blur="updateProperty($event, 'title')">
                     {{ title }}</div>
                 <div class="resume-section">
                     <div class="d-flex">
@@ -209,7 +210,7 @@
                     </div>
                         <div v-for="(item, index) in education" :key="index" class="inner-section relative-container">
                         <div class="d-flex justify-content-between">
-                            <div :contenteditable="editing" @input="updateEducation($event, 'title', index)">
+                            <div :contenteditable="editing" @blur="updateEducation($event, 'title', index)">
                             {{ item.title }}
                         </div>
                         <div class="delete-button-container">
@@ -218,16 +219,16 @@
                         </div>
                         <div class="d-flex justify-content-between" style="font-weight: bolder;">
                             <div>
-                                <sapn :contenteditable="editing" @input="updateEducation($event, 'university', index)">{{ item.university }}</sapn>
+                                <sapn :contenteditable="editing" @blur="updateEducation($event, 'university', index)">{{ item.university }}</sapn>
                             </div>
                             <div>
-                                <span :contenteditable="editing" @input="updateEducation($event, 'major', index)">{{ item.major }}</span>
+                                <span :contenteditable="editing" @blur="updateEducation($event, 'major', index)">{{ item.major }}</span>
                             </div>
                             <div>
-                                <span :contenteditable="editing" @input="updateEducation($event, 'date', index)">{{ item.date }}</span>
+                                <span :contenteditable="editing" @blur="updateEducation($event, 'date', index)">{{ item.date }}</span>
                             </div>
                         </div>
-                        <div>主修课程：<span :contenteditable="editing" @input="updateEducation($event, 'description', index)">{{ item.description }}</span></div>
+                        <div>主修课程：<span :contenteditable="editing" @blur="updateEducation($event, 'description', index)">{{ item.description }}</span></div>
                     </div>
                 </div>
                 <div class="resume-section">
@@ -237,19 +238,19 @@
                     </div>
                         <div v-for="(item, index) in project_experience" :key="index" class="inner-section relative-container">
                         <div class="d-flex justify-content-between" style="font-weight: bolder;">
-                            <div :contenteditable="editing" @input="updateProject($event, 'name', index)">{{ item.name }}</div>
+                            <div :contenteditable="editing" @blur="updateProject($event, 'name', index)">{{ item.name }}</div>
                             <div class="delete-button-container">
                             <EditButtons :editing="editing" @remove-click="removeProjectExperience(index)" :show-add-button="false"/>
                         </div>
                         </div>
                             <div class="d-flex justify-content-between">
-                            <div>技术栈：<span :contenteditable="editing" @input="updateProject($event, 'tech_stack', index)">{{ item.tech_stack }}</span></div>
+                            <div>技术栈：<span :contenteditable="editing" @blur="updateProject($event, 'tech_stack', index)">{{ item.tech_stack }}</span></div>
                         </div>
                         <ul>
                             <li v-for="(desc, innerIndex) in item.description" 
                             :key="innerIndex"
                             :contenteditable="editing"
-                            @input="updateProjectDescription($event, index, innerIndex)"
+                            @blur="updateProjectDescription($event, index, innerIndex)"
                             >{{ desc }}</li>
                         </ul>
                         <EditButtons 
@@ -267,27 +268,27 @@
                     </div>
                         <div v-for="(item, index) in experience" :key="index" class="inner-section relative-container">
                             <div class="d-flex justify-content-between" style="font-weight: bold;">
-                                <div :contenteditable="editing" @input="updateExperience($event, 'position', index)">{{ item.position }}</div>
+                                <div :contenteditable="editing" @blur="updateExperience($event, 'position', index)">{{ item.position }}</div>
                                     <div class="delete-button-container">
                                         <EditButtons :editing="editing" @remove-click="removeExperience(index)" :show-add-button="false"/>
                                     </div>
                                 </div>
                             <div class="d-flex justify-content-between" style="font-weight: bold;">
                             <div>
-                                <span :contenteditable="editing" @input="updateExperience($event, 'company', index)">{{ item.company }}</span>
+                                <span :contenteditable="editing" @blur="updateExperience($event, 'company', index)">{{ item.company }}</span>
                             </div>
                             <div>
-                                <span :contenteditable="editing" @input="updateExperience($event, 'location', index)">{{ item.location }}</span>
+                                <span :contenteditable="editing" @blur="updateExperience($event, 'location', index)">{{ item.location }}</span>
                             </div>
                             <div>
-                                <span :contenteditable="editing" @input="updateExperience($event, 'date', index)">{{ item.date }}</span>
+                                <span :contenteditable="editing" @blur="updateExperience($event, 'date', index)">{{ item.date }}</span>
                             </div>
                         </div>
                         <ul>
                             <li v-for="(desc, innerIndex) in item.description" 
                             :key="innerIndex"
                             :contenteditable="editing"
-                            @input="updateExperienceDescription($event, index, innerIndex)"
+                            @blur="updateExperienceDescription($event, index, innerIndex)"
                             >
                             {{ desc }}</li>
                         </ul>
@@ -305,6 +306,38 @@
 </template>
 
 <style scoped>
+.infinite-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.infinite-list .infinite-list-item {
+  display: block;         /* 让每个 item 占一行 */
+  padding: 10px 15px;
+  margin: 5px 0;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  color: #333;            /* 更好的可读性 */
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;       /* 左对齐更适合长句展示 */
+}
+
+.infinite-list .infinite-list-item + .list-item {
+  margin-top: 10px;
+}
+
+.demo-tabs > .el-tabs__content {
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.el-tabs--right .el-tabs__content {
+  height: 100%;
+  width: 20%;
+}
+
 @media (min-width: 1350px) {
     .resume {
         margin-right: 300px;
@@ -485,17 +518,35 @@ import ExportPdf from '../../components/ExportPdf.vue';
 import CustomButton from '../../components/CustomButton.vue';
 import { useRouter } from 'vue-router';
 import AiPolish from '../../components/AiPolish.vue';
-import { fetchResume, saveResume, uploadThumbnail } from '../../apis/api';
+import { fetchResume, saveResume, uploadThumbnail, getIdeas } from '../../apis/api';
 import html2canvas from 'html2canvas';
 
 const router = useRouter();
 
 export default {
     created() {
-        const resumeIdStr = this.$route.query.resume_id
-        this.resumeId = resumeIdStr ? Number(resumeIdStr) : null;
-        console.log("从数据库加载简历",this.resumeId);
-        this.loadFromDatabase(this.resumeId);
+        const resumeId = Number(this.$route.query.resume_id);
+        
+        if (resumeId === -1) {
+            // 从本地加载简历
+            const resumeData = localStorage.getItem('resumeData');
+            // 检查 templateName是否为template1
+            if (resumeData) {
+                const parsedData = JSON.parse(resumeData);
+                this.templateName = parsedData.fromTemplate;
+                if (this.templateName === 'template1') {
+                    this.loadIntoData(parsedData);
+                    console.log('从本地加载简历',this.templateName);
+                } else {
+                    console.log('本地简历数据不匹配，使用默认模板');
+                }
+            } else {
+                console.log('本地没有简历数据');
+            }
+        } else {
+            console.log("从数据库加载简历",resumeId);
+            this.loadFromDatabase(resumeId);
+        }
 
         const is_display_str = this.$route.query.is_display;
         if (is_display_str !== undefined) {
@@ -612,6 +663,9 @@ export default {
             resumeName: "",     
             resumeId: null,
             is_display: true,
+            count: 0,
+            maxCount: 200,
+            words: [],
         }
     },
     computed: {
@@ -628,8 +682,11 @@ export default {
         },
         percentageWidthLeft() {
             return this.widthLeft + '%';
-        }  
-    },
+        },
+        disabled() {
+            return this.count >= this.maxCount
+        },
+    },  
     methods: {
         updateHeadline(newValue, index) {
             this.headlines[index] = newValue;
@@ -747,6 +804,7 @@ export default {
             }
         },
 
+
         goToTemplate() {
             this.$router.push('/home/template');
         },
@@ -768,7 +826,44 @@ export default {
         handleClose() {
             this.dialogVisible = false;
         },
+        saveResumeData() {
+            const { is_display, dialogVisible, ...resumeData } = this.$data; 
+            localStorage.setItem('resumeData', JSON.stringify(resumeData));
+            console.log('保存到本地成功');
+        },
+        async loadIdeas() {
+            const response = await getIdeas();
+            this.words = response;
+            console.log('获取灵感数据成功', this.words);
+        },
+        load() {
+        if (this.count < this.maxCount) {
+            this.count += 2
+            }
+        },
         
     },
+    name: "ResumeEditor", // 简历编辑页
+    beforeRouteLeave(to, from, next) {
+        const resumeId = Number(this.$route.query.resume_id);
+        if (resumeId === -1) {
+            this.saveResumeData();
+            alert(`已自动保存草稿`);
+        } else {
+            console.log('来自数据库的简历，不保存到本地');
+        }
+        next();
+    },
+    
+    // 刷新或关闭页面时保存数据
+    mounted() {
+        this.loadIdeas();
+        this.count = 10;
+        window.addEventListener('beforeunload', this.saveResumeData);
+    },
+    beforeDestroy() {
+        window.removeEventListener('beforeunload', this.saveResumeData);
+    }
+
 }
 </script>

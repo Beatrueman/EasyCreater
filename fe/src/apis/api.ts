@@ -270,3 +270,12 @@ export const getLoadedResumeURL = async (resumeId: number) => {
     console.error("获取简历文件失败",error);
   }
 }
+
+export const getIdeas = async () => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/get_idea`);
+    return response.data;
+  } catch(error) {
+    console.error("获取灵感词汇失败",error);
+  }
+}

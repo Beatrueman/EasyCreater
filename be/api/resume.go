@@ -398,3 +398,15 @@ func GetLoadedResumeURL(c *gin.Context) {
 		"data":   url,
 	})
 }
+
+func GetIdeaData(c *gin.Context) {
+	ideaData, err := dao.GetIdea()
+	if err != nil {
+		utils.RespFail(c, "Failed to retrieve idea data")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"data":   json.RawMessage(ideaData),
+	})
+}

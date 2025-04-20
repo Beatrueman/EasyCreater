@@ -1,4 +1,5 @@
-FROM golang:latest AS builder
+# 编译环境
+FROM golang:latest as builder
 WORKDIR /EasyCreater
 
 ENV GOPROXY=https://goproxy.cn,direct
@@ -29,4 +30,3 @@ RUN chmod +x /start.sh
 EXPOSE 8888
 
 CMD ["/start.sh"]
-

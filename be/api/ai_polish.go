@@ -6,7 +6,7 @@ import (
 	"demo/utils"
 	"github.com/gin-gonic/gin"
 	easyllm "github.com/soryetong/go-easy-llm"
-	"github.com/soryetong/go-easy-llm/easyai"
+	"github.com/soryetong/go-easy-llm/easyai/chatmodule"
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
@@ -34,9 +34,9 @@ func QWenNormalChat(c *gin.Context) {
 		return
 	}
 
-	globalParams := new(easyai.QWenParameters)
-	globalParams.Input = &easyai.QWenInputMessages{}
-	tipsMsg := &easyai.ChatMessage{Role: easyai.IdSystem, Content: "你是一个简历优化助手，你需要为我优化json格式的简历内容，为了保证体验感，请不要输出一切json格式的内容，不要输出优化后的简历内容，不要用markdown语法。提出的建议需要详细"}
+	globalParams := new(chatmodule.QWenParameters)
+	globalParams.Input = &chatmodule.QWenInputMessages{}
+	tipsMsg := &chatmodule.ChatMessage{Role: chatmodule.IdSystem, Content: "你是一个简历优化助手，你需要为我优化json格式的简历内容，为了保证体验感，请不要输出一切json格式的内容，不要输出优化后的简历内容，不要用markdown语法。提出的建议需要详细"}
 	globalParams.Input.Messages = append(globalParams.Input.Messages, tipsMsg)
 	globalParams.Parameters = map[string]interface{}{
 		"temperature": 0.8,
@@ -44,10 +44,10 @@ func QWenNormalChat(c *gin.Context) {
 		"max_tokens":  1500,
 	}
 
-	config := easyllm.DefaultConfig(token, easyai.ChatTypeQWen)
+	config := easyllm.DefaultConfig(token, chatmodule.ChatTypeQWen)
 	client := easyllm.NewChatClient(config).SetGlobalParams(globalParams)
-	resp, reply, err := client.NormalChat(context.Background(), &easyai.ChatRequest{
-		Model:   easyai.ChatModelQWenTurbo,
+	resp, err := client.NormalChat(context.Background(), &chatmodule.ChatRequest{
+		Model:   "qwen-plus-2025-01-25",
 		Message: req.ResumeData,
 	})
 	if err != nil {
@@ -59,7 +59,7 @@ func QWenNormalChat(c *gin.Context) {
 	// 返回建议
 	c.JSON(http.StatusOK, AIResponse{
 		Reply:     resp.Content,
-		RequestId: reply.(*easyai.QWenResponse).RequestId,
+		RequestId: resp.SessionId,
 	})
 
 }
@@ -76,9 +76,9 @@ func QWenNormalChatBase(c *gin.Context) {
 		return
 	}
 
-	globalParams := new(easyai.QWenParameters)
-	globalParams.Input = &easyai.QWenInputMessages{}
-	tipsMsg := &easyai.ChatMessage{Role: easyai.IdSystem, Content: "你是一个简历助手，你需要提供一些写简历的建议，以帮助我可以做出一份不错的简历。" +
+	globalParams := new(chatmodule.QWenParameters)
+	globalParams.Input = &chatmodule.QWenInputMessages{}
+	tipsMsg := &chatmodule.ChatMessage{Role: chatmodule.IdSystem, Content: "你是一个简历助手，你需要提供一些写简历的建议，以帮助我可以做出一份不错的简历。" +
 		"为了保证体验感，请不要输出一切json格式的内容，不要用markdown语法。提出的建议需要详细一些"}
 	globalParams.Input.Messages = append(globalParams.Input.Messages, tipsMsg)
 	globalParams.Parameters = map[string]interface{}{
@@ -95,10 +95,10 @@ func QWenNormalChatBase(c *gin.Context) {
 	}
 
 	log.Printf(Question)
-	config := easyllm.DefaultConfig(token, easyai.ChatTypeQWen)
+	config := easyllm.DefaultConfig(token, chatmodule.ChatTypeQWen)
 	client := easyllm.NewChatClient(config).SetGlobalParams(globalParams)
-	resp, reply, err := client.NormalChat(context.Background(), &easyai.ChatRequest{
-		Model:   easyai.ChatModelQWenTurbo,
+	resp, err := client.NormalChat(context.Background(), &chatmodule.ChatRequest{
+		Model:   "qwen-plus-2025-01-25",
 		Message: Question,
 	})
 	if err != nil {
@@ -110,7 +110,7 @@ func QWenNormalChatBase(c *gin.Context) {
 	// 返回建议
 	c.JSON(http.StatusOK, AIResponse{
 		Reply:     resp.Content,
-		RequestId: reply.(*easyai.QWenResponse).RequestId,
+		RequestId: resp.SessionId,
 	})
 
 }

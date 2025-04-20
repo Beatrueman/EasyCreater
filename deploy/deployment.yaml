@@ -77,6 +77,9 @@ spec:
         - name: easycreater-secret-config
           secret:
             secretName: easycreater-secret-config
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: easycreater-mysql-pvc
       containers:
         - name: easycreater-mysql
           image: mysql:latest

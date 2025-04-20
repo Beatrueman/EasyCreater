@@ -33,7 +33,7 @@
       <el-container>
         <el-aside>
       <el-menu
-        default-active="2"
+        default-active="1"
         class="el-menu-vertical-demo"
       >
       <el-menu-item index="1" @click="goToIndex">
