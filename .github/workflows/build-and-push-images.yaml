@@ -1,9 +1,9 @@
 name: Build and Push Image
 
 on:
-  branch: 
-    - cloud
   push:
+    branches:
+    - cloud
     tags:
     - 'v*'
   workflow_dispatch:
