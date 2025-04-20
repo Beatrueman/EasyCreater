@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // 创建 Axios 实例
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_SERVER || 'http://localhost:8888/api',
-  //baseURL: '/api',
+  //baseURL: import.meta.env.VITE_API_SERVER || 'http://localhost:8888/api',
+  baseURL: '/api',
   timeout: 50000,  // 请求超时时间
 });
 
