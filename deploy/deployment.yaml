@@ -77,7 +77,7 @@ spec:
         - name: easycreater-secret-config
           secret:
             secretName: easycreater-secret-config
-        - name: mysql-persistent-storage
+        - name: mysql-pvc
           persistentVolumeClaim:
             claimName: easycreater-mysql-pvc
       containers:
@@ -85,7 +85,9 @@ spec:
           image: mysql:latest
           volumeMounts:
             - name: easycreater-secret-config
-              mountPath: /config 
+              mountPath: /config
+            - name: mysql-pvc
+              mountPath: /var/lib/mysql
           command: ["/bin/sh", "-c"]
           args:
             - |
