@@ -12,7 +12,7 @@ type User struct {
 	Password string `gorm:"column:password;not null" form:"password" json:"password" binding:"required"`
 	Email    string `gorm:"column:email;not null" form:"email" json:"email"`
 	Phone    string `gorm:"column:phone;not null" form:"phone" json:"phone"`
-	Avatar   string `gorm:"column:avatar;not null" form:"avatar" json:"avatar"`
+	Avatar   string `gorm:"column:avatar;nut null" form:"avatar" json:"avatar"`
 	// 外键。定义与Content模型的关联，表示一个用户可以有多个内容
 	Contents     []Content          `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
 	ResumeData   []ResumeData       `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
@@ -35,6 +35,7 @@ type ResumeData struct {
 	IsShared     bool      `gorm:"column:is_shared;default:false;type:tinyint(1);not null"`
 	ThumbnailUrl string    `gorm:"column:thumbnail_url;not null" json:"thumbnail_url"`
 	ResumeName   string    `gorm:"column:resume_name;not null" json:"resume_name"`
+	LikeCount    int       `gorm:"column:like_count;default:0;not null" json:"like_count"`
 }
 
 type LoadedResumeData struct {
@@ -44,6 +45,14 @@ type LoadedResumeData struct {
 	UserID     int       `gorm:"column:user_id;not null"`
 	URL        string    `gorm:"column:url;not null" json:"url"`
 	Timestamp  time.Time `gorm:"column:timestamp;default:CURRENT_TIMESTAMP;type:datetime;not null"`
+}
+
+type ResumeLike struct {
+	ID        int       `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
+	ResumeID  int       `gorm:"column:resume_id;not null" json:"resume_id"`
+	UserID    int       `gorm:"column:user_id;not null" json:"user_id"`
+	Username  string    `gorm:"column:username;not null" json:"username"`
+	CreatedAt time.Time `gorm:"column:created_at;default:CURRENT_TIMESTAMP;type:datetime;not null" json:"created_at"`
 }
 
 type ChangePasswordRequest struct {

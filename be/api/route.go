@@ -46,7 +46,11 @@ func InitRouter() {
 			UserRouter.DELETE("/resume/delete_loaded/:resume_id", DeleteLoadedResume)
 			UserRouter.GET("/resume/get_loaded_url/:resume_id", GetLoadedResumeURL)
 			UserRouter.GET("/resume/get_idea", GetIdeaData)
+			// 点赞相关路由
+			UserRouter.POST("/resume/like/:resume_id", ToggleResumeLike)
+			UserRouter.GET("/resume/like/:resume_id", GetResumeLikeStatus)
 		}
 	}
 	r.Run(":8888")
 }
+

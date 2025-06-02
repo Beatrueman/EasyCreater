@@ -11,4 +11,8 @@ export interface ResumeData {
     resume_data: string;
     Timestamp: string;
     IsShared: boolean;
+    like_count?: number;
+    isLiked?: boolean;
+    thumbnailUrl?: string;
+    resume_name?: string;
   }

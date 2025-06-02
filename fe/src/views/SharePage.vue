@@ -1,43 +1,68 @@
 <template>
   <main class="container">
-    <templplate v-if="mySharedResumes.length > 0" >
-      <div class="tab-container" >
+    <template v-if="mySharedResumes.length > 0">
+      <div class="tab-container">
         <div class="template-list">
-          <div v-for="(resume, index) in paginatedSharedResumes" :key="index" class="template-item-container">
-            <div class="template-preview" @click="handleClick(resume)">
-              <img :src="resume.thumbnailUrl" class="template-preview-img" alt="Resume Thumbnail">
-              <div>
-                <span>{{ resume.resume_name }}</span>
+          <div
+              v-for="(resume, index) in paginatedSharedResumes"
+              :key="index"
+              class="template-item-container"
+          >
+            <!-- 顶部点赞区域 -->
+            <div class="like-section" @click.stop>
+              <!-- 自定义图片样式 -->
+              <div class="custom-like-btn" @click.stop="toggleLike(resume)">
+                <img
+                    :src="resume.isLiked ? likedIconUrl : unlikedIconUrl"
+                    alt="like icon"
+                    class="like-icon"
+                />
               </div>
-              <span>{{ resume.username }}分享的简历</span>
+
+              <span class="like-count">{{ resume.like_count || 0 }}</span>
+            </div>
+
+            <div class="template-preview" @click="handleClick(resume)">
+              <img
+                  :src="resume.thumbnailUrl"
+                  class="template-preview-img"
+                  alt="Resume Thumbnail"
+              />
+              <div class="resume-name">{{ resume.resume_name }}</div>
+              <span class="resume-owner">{{ resume.username }}分享的简历</span>
             </div>
           </div>
         </div>
       </div>
-    </templplate>
+    </template>
 
-      <templplate v-else>
-        <div class="empty-state">
-          <h4 style="margin-left: 10px;">还没有人分享简历哦，快去分享吧~</h4>
-          <el-button
-          :icon="Promotion"
-          style="width: 150px;"
-          @click="goToMyResume" 
-          type="success" 
-          round 
-          size="large">去制作</el-button>
-        </div>
-      </templplate>
+    <template v-else>
+      <div class="empty-state">
+        <h4 style="margin-left: 10px;">还没有人分享简历哦，快去分享吧~</h4>
+        <el-button
+            :icon="Promotion"
+            style="width: 150px;"
+            @click="goToMyResume"
+            type="success"
+            round
+            size="large"
+        >
+          去制作
+        </el-button>
+      </div>
+    </template>
+
     <div class="pagination-container">
-          <ChangePage
+      <ChangePage
           :total="mySharedResumes.length"
           :pageSize="pageSize"
           :currentPage="currentPage"
           @pageChange="handlePageChange"
-          />
-        </div>
+      />
+    </div>
   </main>
 </template>
+
 
 <style scoped>
 .pagination-container {
@@ -47,21 +72,21 @@
 }
 
 .tab-container {
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px 05px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
-    height: 80vh;
-    margin-top: -10px;
-    margin-bottom: -5vh;
-  }
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px 05px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  height: 80vh;
+  margin-top: -10px;
+  margin-bottom: -5vh;
+}
 
 @media (min-width: 600px) {
   .tab-container {
     height: 79vh;
-    }
+  }
 }
 
 .template-list {
   padding: 5%;
-  display: grid; 
+  display: grid;
   grid-template-columns: repeat(5, 1fr);
   justify-content: center;
   gap: 30px; /* 每个模板之间的水平和垂直间距 */
@@ -100,16 +125,48 @@
 
 .template-item-container {
   margin-bottom: 50px;
-  width: 100%; 
+  width: 100%;
   display: flex;
   flex-direction: column; /* 垂直排列内容 */
   align-items: center; /* 内容居中 */
   gap: 10px; /* 内部元素之间的间距 */
 }
+
+.like-section {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  user-select: none;
+}
+.like-icon {
+  width:25px;
+  height:25px;
+}
+.liked {
+  color: #f56c6c;
+}
+
+.like-count {
+  font-size: 14px;
+  color: #666;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.pagination-container {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
 </style>
 
 <script setup lang="ts">
-import { getAllSharedResume, getThumbnail } from '../apis/api'
+import { getAllSharedResume, getThumbnail, toggleResumeLike, getResumeLikeStatus } from '../apis/api'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Promotion } from '@element-plus/icons-vue'
@@ -126,14 +183,18 @@ interface ResumeData {
   IsShared: boolean;
   thumbnailUrl?: string;
   resume_name: string;
+  like_count?: number;
+  isLiked?: boolean;
 }
-
 
 const mySharedResumes = ref<ResumeData[]>([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
+const likedIconUrl = new URL('../assets/heartFilled.png', import.meta.url).href;
+const unlikedIconUrl = new URL('../assets/heart.png', import.meta.url).href;
 
-const handleClick = (resume: { resume_id: number; template_name: string }) => {
+
+const handleClick = (resume: ResumeData) => {
   const resumeId = resume.resume_id;
   const templateName = resume.template_name;
   if (templateName === 'template1') {
@@ -146,19 +207,19 @@ const handleClick = (resume: { resume_id: number; template_name: string }) => {
 };
 
 const goToMakePage = (resumeId: number, is_display: boolean) => {
-  router.push({name: 'MakePage', query: {resume_id: resumeId, is_display: is_display.toString()}})
-}
+  router.push({ name: 'MakePage', query: { resume_id: resumeId, is_display: is_display.toString() } });
+};
 
 const goToMakePageSecond = (resumeId: number, is_display: boolean) => {
-  router.push({name: 'MakePageSecond', query: {resume_id: resumeId, is_display: is_display.toString()}})
-}
+  router.push({ name: 'MakePageSecond', query: { resume_id: resumeId, is_display: is_display.toString() } });
+};
 
 const goToMyResume = () => {
   router.push({ name: 'MyResumePage' });
-}
+};
 
 const paginatedSharedResumes = computed(() => {
-  if (!mySharedResumes.value) return []; 
+  if (!mySharedResumes.value) return [];
   const startIndex = (currentPage.value - 1) * pageSize.value;
   const endIndex = startIndex + pageSize.value;
   return mySharedResumes.value.slice(startIndex, endIndex);
@@ -167,24 +228,62 @@ const paginatedSharedResumes = computed(() => {
 const handlePageChange = (page: number) => {
   currentPage.value = page;
 };
+
+// 切换点赞状态
+const toggleLike = async (resume: ResumeData) => {
+  try {
+    const res = await toggleResumeLike(resume.resume_id);
+    if (res?.status === 200) {
+      resume.isLiked = res.is_liked;
+      resume.like_count = res.like_count;
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error);
+  }
+};
+
+
+// 初始化点赞状态和点赞数
+const fetchLikeStatus = async (resume: ResumeData) => {
+  try {
+    const res = await getResumeLikeStatus(resume.resume_id);
+    if (res.status === 200) {
+      resume.isLiked = res.is_liked;
+      resume.like_count = res.like_count;
+    } else {
+      resume.isLiked = false;
+      resume.like_count = 0;
+    }
+  } catch (error) {
+    console.error('获取点赞状态失败:', error);
+    resume.isLiked = false;
+    resume.like_count = 0;
+  }
+};
+
 const fetchSharedResumes = async () => {
   try {
     const res = await getAllSharedResume();
     if (res && Array.isArray(res)) {
-      // 获取所有简历的缩略图
-      for (const resume of res) {
+      // 先获取缩略图，改为并行请求提升性能
+      const promises = res.map(async (resume) => {
         const thumbnailUrl = await getThumbnail(resume.resume_id);
-        resume.thumbnailUrl = thumbnailUrl;  // 将缩略图URL赋值到简历数据
+        resume.thumbnailUrl = thumbnailUrl;
+        return resume;
+      });
+      mySharedResumes.value = await Promise.all(promises);
+
+      // 获取每个简历的点赞状态和点赞数
+      for (const resume of mySharedResumes.value) {
+        await fetchLikeStatus(resume);
       }
-      mySharedResumes.value = res;
     }
   } catch (error) {
     console.error('Error fetching resumes:', error);
   }
 };
 
-onMounted(async () => {
+onMounted(() => {
   fetchSharedResumes();
 });
 </script>
-
