@@ -518,8 +518,10 @@ export default {
         const resumeId = Number(this.$route.query.resume_id);
         
         if (resumeId === -1) {
+            const currentTemplate = this.$route.query.template || 'template2'; // 从 query 中获取模板名
+            this.templateName = currentTemplate;
             // 从本地加载简历
-            const resumeData = localStorage.getItem('resumeData');
+            const resumeData = localStorage.getItem(`resumeData_${currentTemplate}`);
             // 检查 templateName是否为template2
             if (resumeData) {
                 const parsedData = JSON.parse(resumeData);
@@ -819,7 +821,7 @@ export default {
         },
         saveResumeData() {
             const { is_display, dialogVisible, ...resumeData } = this.$data; 
-            localStorage.setItem('resumeData', JSON.stringify(resumeData));
+            localStorage.setItem(`resumeData_${this.templateName}`, JSON.stringify(resumeData));
             console.log('保存到本地成功');
         },
         async loadIdeas() {

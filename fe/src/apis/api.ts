@@ -279,3 +279,25 @@ export const getIdeas = async () => {
     console.error("获取灵感词汇失败",error);
   }
 }
+
+// 切换简历点赞状态
+export const toggleResumeLike = async (resumeId: number) => {
+  try {
+    const response = await axiosInstance.post(`/user/resume/like/${resumeId}`);
+    return response;
+  } catch (error) {
+    console.error("切换点赞状态失败:", error);
+    throw error;
+  }
+};
+
+// 获取简历点赞状态
+export const getResumeLikeStatus = async (resumeId: number) => {
+  try {
+    const response = await axiosInstance.get(`/user/resume/like/${resumeId}`);
+    return response;
+  } catch (error) {
+    console.error("获取点赞状态失败:", error);
+    throw error;
+  }
+};

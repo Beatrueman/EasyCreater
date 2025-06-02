@@ -4,6 +4,20 @@
       <div class="tab-container" >
         <div class="template-list">
           <div v-for="(resume, index) in paginatedSharedResumes" :key="index" class="template-item-container">
+            
+            <div class="like-section" @click.stop>
+              <!-- 自定义图片样式 -->
+              <div class="custom-like-btn" @click.stop="toggleLike(resume)">
+                <img
+                    :src="resume.isLiked ? likedIconUrl : unlikedIconUrl"
+                    alt="like icon"
+                    class="like-icon"
+                />
+              </div>
+
+              <span class="like-count">{{ resume.like_count || 0 }}</span>
+            </div>
+
             <div class="template-preview" @click="handleClick(resume)">
               <img :src="resume.thumbnailUrl" class="template-preview-img" alt="Resume Thumbnail">
               <div>
@@ -99,6 +113,7 @@
 }
 
 .template-item-container {
+  margin-top: -38px;
   margin-bottom: 50px;
   width: 100%; 
   display: flex;
@@ -106,10 +121,37 @@
   align-items: center; /* 内容居中 */
   gap: 10px; /* 内部元素之间的间距 */
 }
+
+.like-section {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  user-select: none;
+}
+.like-icon {
+  width:25px;
+  height:25px;
+}
+.liked {
+  color: #f56c6c;
+}
+
+.like-count {
+  font-size: 14px;
+  color: #666;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 40px;
+}
+
 </style>
 
 <script setup lang="ts">
-import { getAllSharedResume, getThumbnail } from '../apis/api'
+import { getAllSharedResume, getThumbnail, toggleResumeLike, getResumeLikeStatus  } from '../apis/api'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Promotion } from '@element-plus/icons-vue'
@@ -126,12 +168,16 @@ interface ResumeData {
   IsShared: boolean;
   thumbnailUrl?: string;
   resume_name: string;
+  like_count?: number;
+  isLiked?: boolean;
 }
 
 
 const mySharedResumes = ref<ResumeData[]>([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
+const likedIconUrl = new URL('../assets/heartFilled.png', import.meta.url).href;
+const unlikedIconUrl = new URL('../assets/heart.png', import.meta.url).href;
 
 const handleClick = (resume: { resume_id: number; template_name: string }) => {
   const resumeId = resume.resume_id;
@@ -164,6 +210,37 @@ const paginatedSharedResumes = computed(() => {
   return mySharedResumes.value.slice(startIndex, endIndex);
 });
 
+// 切换点赞状态
+const toggleLike = async (resume: ResumeData) => {
+  try {
+    const res = await toggleResumeLike(resume.resume_id);
+    if (res?.status === 200) {
+      resume.isLiked = res.data.is_liked;
+      resume.like_count = res.data.like_count;
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error);
+  }
+};
+
+
+// 初始化点赞状态和点赞数
+const fetchLikeStatus = async (resume: ResumeData) => {
+  try {
+    const res = await getResumeLikeStatus(resume.resume_id);
+    if (res.status === 200) {
+      resume.isLiked = res.data.is_liked;
+      resume.like_count = res.data.like_count;
+    } else {
+      resume.isLiked = false;
+      resume.like_count = 0;
+    }
+  } catch (error) {
+    console.error('获取点赞状态失败:', error);
+    resume.isLiked = false;
+    resume.like_count = 0;
+  }
+};
 const handlePageChange = (page: number) => {
   currentPage.value = page;
 };
@@ -177,6 +254,9 @@ const fetchSharedResumes = async () => {
         resume.thumbnailUrl = thumbnailUrl;  // 将缩略图URL赋值到简历数据
       }
       mySharedResumes.value = res;
+      for (const resume of mySharedResumes.value) {
+        await fetchLikeStatus(resume);
+      }
     }
   } catch (error) {
     console.error('Error fetching resumes:', error);

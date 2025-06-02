@@ -74,6 +74,8 @@ func ShareResumeUpdate(ResumeId int, isShared bool) error {
 		log.Printf("Failed to update resume data: %v\n", res.Error)
 		return res.Error
 	}
+	log.Printf("Sharing resume ID: %d, new status: %v", ResumeId, isShared)
+
 	return nil
 }
 
@@ -333,4 +335,92 @@ func GetIdea() ([]byte, error) {
 	}
 
 	return data, nil
+}
+
+// ToggleResumeLike 切换简历点赞状态
+func ToggleResumeLike(resumeID, userID int, username string) (bool, error) {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	var existingLike model.ResumeLike
+	err := tx.Where("resume_id = ? AND user_id = ?", resumeID, userID).First(&existingLike).Error
+	if err == gorm.ErrRecordNotFound {
+		// 点赞，插入记录
+		newLike := model.ResumeLike{
+			ResumeID: resumeID,
+			UserID:   userID,
+			Username: username,
+		}
+		if err := tx.Create(&newLike).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
+
+		// 点赞计数 +1
+		if err := tx.Model(&model.ResumeData{}).
+			Where("resume_id = ?", resumeID).
+			Update("like_count", gorm.Expr("like_count + 1")).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
+
+		if err := tx.Commit().Error; err != nil {
+			return false, err
+		}
+		return true, nil
+	} else if err != nil {
+		tx.Rollback()
+		return false, err
+	} else {
+		// 取消点赞，删除记录
+		if err := tx.Delete(&existingLike).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
+
+		// 点赞计数减1，防止负数
+		if err := tx.Model(&model.ResumeData{}).
+			Where("resume_id = ?", resumeID).
+			Update("like_count", gorm.Expr("CASE WHEN like_count > 0 THEN like_count - 1 ELSE 0 END")).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
+
+		if err := tx.Commit().Error; err != nil {
+			return false, err
+		}
+		return false, nil
+	}
+}
+
+// GetResumeLikeStatus 获取用户对特定简历的点赞状态
+func GetResumeLikeStatus(resumeID, userID int) (bool, error) {
+	var like model.ResumeLike
+	result := db.Where("resume_id = ? AND user_id = ?", resumeID, userID).First(&like)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		return false, nil // 未点赞
+	} else if result.Error != nil {
+		log.Printf("Database error: %v\n", result.Error)
+		return false, result.Error
+	}
+
+	return true, nil // 已点赞
+}
+
+// GetResumeLikeCount 获取简历点赞数量
+func GetResumeLikeCount(resumeID int) (int, error) {
+	var resume model.ResumeData
+	result := db.Select("like_count").Where("resume_id = ?", resumeID).First(&resume)
+
+	if result.Error != nil {
+		log.Printf("Failed to get like count: %v\n", result.Error)
+		return 0, result.Error
+	}
+
+	return resume.LikeCount, nil
 }

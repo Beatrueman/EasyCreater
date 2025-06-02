@@ -410,3 +410,110 @@ func GetIdeaData(c *gin.Context) {
 		"data":   json.RawMessage(ideaData),
 	})
 }
+
+// ToggleResumeLike 切换简历点赞状态
+func ToggleResumeLike(c *gin.Context) {
+	username, ok := c.Get("username")
+	if !ok {
+		utils.RespFail(c, "Username not found in context")
+		return
+	}
+
+	// 获取简历ID
+	resumeIDStr := c.Param("resume_id")
+	resumeID, err := strconv.Atoi(resumeIDStr)
+	if err != nil {
+		utils.RespFail(c, "Invalid resume ID")
+		return
+	}
+
+	// 获取用户ID
+	userIDStr, err := dao.SelectUserInfo(username.(string), "Id")
+	if err != nil {
+		utils.RespFail(c, "Error retrieving user ID")
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		utils.RespFail(c, "Invalid user ID")
+		return
+	}
+
+	// 切换点赞状态
+	isLiked, err := dao.ToggleResumeLike(resumeID, userID, username.(string))
+	if err != nil {
+		utils.RespFail(c, "Failed to toggle like status")
+		return
+	}
+
+	// 获取最新的点赞数量
+	likeCount, err := dao.GetResumeLikeCount(resumeID)
+	if err != nil {
+		utils.RespFail(c, "Failed to get like count")
+		return
+	}
+	log.Printf("ToggleLike: resumeID=%d, userID=%d, username=%s", resumeID, userID, username)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  200,
+		"message": "Success",
+		"data": gin.H{
+			"is_liked":   isLiked,
+			"like_count": likeCount,
+		},
+	})
+}
+
+// GetResumeLikeStatus 获取简历点赞状态
+func GetResumeLikeStatus(c *gin.Context) {
+	username, ok := c.Get("username")
+	if !ok {
+		utils.RespFail(c, "Username not found in context")
+		return
+	}
+
+	// 获取简历ID
+	resumeIDStr := c.Param("resume_id")
+	resumeID, err := strconv.Atoi(resumeIDStr)
+	if err != nil {
+		utils.RespFail(c, "Invalid resume ID")
+		return
+	}
+
+	// 获取用户ID
+	userIDStr, err := dao.SelectUserInfo(username.(string), "Id")
+	if err != nil {
+		utils.RespFail(c, "Error retrieving user ID")
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		utils.RespFail(c, "Invalid user ID")
+		return
+	}
+
+	// 获取点赞状态
+	isLiked, err := dao.GetResumeLikeStatus(resumeID, userID)
+	if err != nil {
+		utils.RespFail(c, "Failed to get like status")
+		return
+	}
+
+	// 获取点赞数量
+	likeCount, err := dao.GetResumeLikeCount(resumeID)
+	fmt.Println(likeCount)
+	if err != nil {
+		utils.RespFail(c, "Failed to get like count")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  200,
+		"message": "Success",
+		"data": gin.H{
+			"is_liked":   isLiked,
+			"like_count": likeCount,
+		},
+	})
+}

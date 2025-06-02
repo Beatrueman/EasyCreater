@@ -35,6 +35,7 @@ type ResumeData struct {
 	IsShared     bool      `gorm:"column:is_shared;default:false;type:tinyint(1);not null"`
 	ThumbnailUrl string    `gorm:"column:thumbnail_url;not null" json:"thumbnail_url"`
 	ResumeName   string    `gorm:"column:resume_name;not null" json:"resume_name"`
+	LikeCount    int       `gorm:"column:like_count;default:0;not null" json:"like_count"`
 }
 
 type LoadedResumeData struct {
@@ -44,6 +45,14 @@ type LoadedResumeData struct {
 	UserID     int       `gorm:"column:user_id;not null"`
 	URL        string    `gorm:"column:url;not null" json:"url"`
 	Timestamp  time.Time `gorm:"column:timestamp;default:CURRENT_TIMESTAMP;type:datetime;not null"`
+}
+
+type ResumeLike struct {
+	ID        int       `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
+	ResumeID  int       `gorm:"column:resume_id;not null" json:"resume_id"`
+	UserID    int       `gorm:"column:user_id;not null" json:"user_id"`
+	Username  string    `gorm:"column:username;not null" json:"username"`
+	CreatedAt time.Time `gorm:"column:created_at;default:CURRENT_TIMESTAMP;type:datetime;not null" json:"created_at"`
 }
 
 type ChangePasswordRequest struct {

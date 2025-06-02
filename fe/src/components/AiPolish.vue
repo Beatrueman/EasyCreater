@@ -33,6 +33,7 @@
         type: String,
         required: true,
       },
+      
     },
     emits: ["saveResumeLocal"],
     setup(props, { emit }) {
@@ -45,7 +46,7 @@
         loading.value = true;
         drawer.value = true;
   
-        const resumeData = localStorage.getItem(`resumeData`);
+        const resumeData = localStorage.getItem(`resumeData_${props.fromTemplate}`);
         if (!resumeData) {
           aiResponse.value = "未找到简历数据，请先保存您的简历";
           loading.value = false;

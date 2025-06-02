@@ -5,27 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8f7bbeca-5cfc-4e8f-b4f4-ffe8be951453" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/ai_polish.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/ai_polish.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/resume.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/resume.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/route.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/route.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dao/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/dao/init.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dao/resume.go" beforeDir="false" afterPath="$PROJECT_DIR$/dao/resume.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/user.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../fe/auto-imports.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/auto-imports.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../fe/components.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/components.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/src/apis/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/apis/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../fe/src/components/AiPolish.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/components/AiPolish.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/src/components/SectionHeadline.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/components/SectionHeadline.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/src/components/SideBar.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/components/SideBar.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/src/utils/axios.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/utils/axios.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/src/views/IndexPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/views/IndexPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/src/views/TemplatePage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/views/TemplatePage.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../fe/src/views/pages/MakePage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/views/pages/MakePage.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../fe/src/views/pages/MakePageSecond.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/views/pages/MakePageSecond.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
