@@ -12,7 +12,7 @@ type User struct {
 	Password string `gorm:"column:password;not null" form:"password" json:"password" binding:"required"`
 	Email    string `gorm:"column:email;not null" form:"email" json:"email"`
 	Phone    string `gorm:"column:phone;not null" form:"phone" json:"phone"`
-	Avatar   string `gorm:"column:avatar;nut null" form:"avatar" json:"avatar"`
+	Avatar   string `gorm:"column:avatar;not null" form:"avatar" json:"avatar"`
 	// 外键。定义与Content模型的关联，表示一个用户可以有多个内容
 	Contents     []Content          `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
 	ResumeData   []ResumeData       `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
