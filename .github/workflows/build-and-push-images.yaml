@@ -12,6 +12,19 @@ on:
         type: string
 
 jobs:
+  analyze:
+    name: sonar-analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: sonarsource/sonarqube-scan-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    
   build-and-push-backend:
     runs-on: ubuntu-latest
     environment:
