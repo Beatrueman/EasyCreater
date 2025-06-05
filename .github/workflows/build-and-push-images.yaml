@@ -24,7 +24,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_SCANNER_OPTS: "-Dsonar.scanner.provisioning.enable=false"
+          SONAR_SCANNER_OPTS: "-Dsonar.scanner.skipJre=true"
     
   build-and-push-backend:
     runs-on: ubuntu-latest
