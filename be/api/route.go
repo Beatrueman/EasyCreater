@@ -14,6 +14,8 @@ func InitRouter() {
 
 		api.POST("/register", register)
 		api.POST("/login", login)
+		api.GET("/ask", QWenStreamChat)
+		api.GET("/ask_base", QWenStreamChatBase)
 
 		AdminRouter := api.Group("/auth")
 		{
@@ -30,8 +32,9 @@ func InitRouter() {
 			UserRouter.GET("/info", getUserInfoFromToken) // 查询本用户信息（username和role）
 			UserRouter.POST("/:userId/content", PostContent)
 			UserRouter.GET("/:userId/content", GetContent)
-			UserRouter.POST("/ask", QWenNormalChat)
-			UserRouter.POST("/ask_base", QWenNormalChatBase)
+			UserRouter.POST("/cache_resume", CacheResume)
+			//UserRouter.GET("/ask", QWenStreamChat)
+			//UserRouter.GET("/ask_base", QWenStreamChatBase)
 			UserRouter.POST("/resume/save", AddResume)
 			UserRouter.GET("/resume/list", GetResume)
 			UserRouter.PUT("/resume/share/:resume_id", ShareResume)
@@ -53,4 +56,3 @@ func InitRouter() {
 	}
 	r.Run(":8888")
 }
-

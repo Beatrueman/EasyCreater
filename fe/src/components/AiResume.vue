@@ -21,7 +21,7 @@
   import { ref, defineComponent } from "vue";
   import { ElMessage } from "element-plus";
   import { MagicStick } from "@element-plus/icons-vue";
-  import { askAIBase } from '../apis/api';
+  import { getAIStreamBase, submitResumeData } from '../apis/api';
   import { useRouter } from "vue-router";
   import MarkdownIt from "vue3-markdown-it";
   
@@ -47,24 +47,37 @@
       const openDrawer = async () => {
         loading.value = true;
         drawer.value = true;
+        aiResponse.value = ""; 
   
         try {
-          const response = await askAIBase(props.resume_data);
-          
-          if (!response) {
-            throw new Error("API 返回数据为空");
-        }
-
-          // 检查后端状态码
-          if(response.status == 2005) {
-            ElMessage.error("登录已过期，请重新登录");
-            alert('登录已过期，请重新登录');
-            localStorage.removeItem("jwt-token"); // 清除 token
-            router.replace({ name: "login" }); // 跳转到登录页
-            return;
+          const taskId = await submitResumeData(props.resume_data);
+          if (!taskId) {
+            throw new Error("未能获取有效 task_id");
           }
+          
 
-          aiResponse.value = response.reply || "AI优化建议生成失败";
+          // 第二步：通过 SSE 接收流式响应
+          const eventSource = getAIStreamBase(taskId);
+          console.log(eventSource);
+          
+          eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.content) {
+              aiResponse.value += data.content;
+            }
+          };
+
+          eventSource.onerror = (err) => {
+            console.error("SSE 错误", err);
+            ElMessage.error("AI 流式请求失败");
+            loading.value = false;
+            eventSource.close();
+          };
+
+          eventSource.onopen = () => {
+            console.log("SSE 连接已建立");
+          };
+
         } catch (error) {
           aiResponse.value = "请求失败，请检查网络或后端状态";
           ElMessage.error("请求失败，请检查网络或后端状态");

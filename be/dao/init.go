@@ -12,6 +12,10 @@ import (
 )
 
 var db *gorm.DB
+var (
+	Rdb *redis.Client // 包级变量，首字母大写可以被其他包访问
+	Ctx = context.Background()
+)
 
 // 加载配置文件
 func LoadConfig() {
@@ -108,13 +112,13 @@ func InitRedis() {
 	// 读取 Redis 配置信息
 	host := viper.GetString("Redis.host")
 	port := viper.GetString("Redis.port")
-	//password := viper.GetString("Redis.password")
+	password := viper.GetString("Redis.password")
 	DB := viper.GetInt("Redis.DB")
 
 	// 连接 Redis
-	Rdb := redis.NewClient(&redis.Options{
+	Rdb = redis.NewClient(&redis.Options{
 		Addr:     host + ":" + port,
-		Password: "",
+		Password: password,
 		DB:       DB,
 	})
 

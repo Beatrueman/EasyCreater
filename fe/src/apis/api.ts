@@ -1,4 +1,5 @@
 import axiosInstance from '../utils/axios';
+import { API_BASE_URL } from '../../config';
 
 interface RegisterData {
   username: string;
@@ -42,34 +43,31 @@ export const Login = async (data: LoginData) => {
   }
 };
 
-export const askAI = async (resumeData: string) => {
+export const submitResumeData = async (resumeData: string) => {
   try {
-    const response = await axiosInstance.post("/user/ask", { resume_data: resumeData }, {
+    const response = await axiosInstance.post("/user/cache_resume", {
+      resume_data: resumeData,
+    }, {
       headers: {
         "Content-Type": "application/json",
       },
     });
-    console.log("AI 优化建议:", response);
-    return response;
+    return response.data.task_id;
   } catch (error) {
-    console.error("AI 请求失败:", error);
+    console.error("提交 resumeData 失败:", error);
     throw error;
   }
 };
 
-export const askAIBase = async (resumeData: string) => {
-  try {
-    const response = await axiosInstance.post("/user/ask_base", { resume_data: resumeData }, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("AI 优化建议:", response);
-    return response;
-  } catch (error) {
-    console.error("AI 请求失败:", error);
-    throw error;
-  }
+// SSE 获取优化建议
+export const getAIStreamBase = (taskId: string): EventSource => {
+  const url = `${API_BASE_URL}/api/ask_base?task_id=${taskId}`;
+  return new EventSource(url);
+};
+
+export const getAIStream = (taskId: string): EventSource => {
+  const url = `${API_BASE_URL}/api/ask?task_id=${taskId}`;
+  return new EventSource(url);
 };
 
 export const changeUserPassword = async (form: { Password: string; newPassword: string }) => {

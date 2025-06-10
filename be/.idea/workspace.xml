@@ -5,20 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8f7bbeca-5cfc-4e8f-b4f4-ffe8be951453" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/../CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/../CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/ai_polish.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/ai_polish.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/resume.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/resume.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/route.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/route.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dao/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/dao/init.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dao/resume.go" beforeDir="false" afterPath="$PROJECT_DIR$/dao/resume.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/auto-imports.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/auto-imports.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/components.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/components.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/start.sh" beforeDir="false" afterPath="$PROJECT_DIR$/start.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fe/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/nginx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fe/src/apis/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/apis/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../fe/src/components/AiPolish.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/components/AiPolish.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/src/views/pages/MakePage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/views/pages/MakePage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fe/src/views/pages/MakePageSecond.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/views/pages/MakePageSecond.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fe/src/components/AiResume.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/components/AiResume.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fe/src/utils/axios.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../fe/src/utils/axios.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +33,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="tsconfig.json" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -50,7 +55,10 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
     &quot;Go 构建.go build main.go.executor&quot;: &quot;Run&quot;,
+    &quot;Go 测试.demo 中的 TestQWenStreamChat.executor&quot;: &quot;Run&quot;,
+    &quot;Go 测试.go test be.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
@@ -62,7 +70,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/bearx&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/bearx/Desktop/EasyCreater/be&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
@@ -71,11 +79,14 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\bearx\Desktop\EasyCreater\be" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\bearx\Desktop\EasyCreater\be" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go 构建.go build main.go">
     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="be" />
       <working_directory value="$PROJECT_DIR$" />
@@ -85,9 +96,32 @@
       <filePath value="$PROJECT_DIR$/main.go" />
       <method v="2" />
     </configuration>
+    <configuration name="demo 中的 TestQWenStreamChat" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="be" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="demo" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestQWenStreamChat\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go test be" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="be" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="demo" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Go 构建.go build main.go" />
+        <item itemvalue="Go 测试.demo 中的 TestQWenStreamChat" />
+        <item itemvalue="Go 测试.go test be" />
       </list>
     </recent_temporary>
   </component>

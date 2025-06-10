@@ -1,6 +1,11 @@
 version: '3'
 
 services:
+  redis:
+    image: redis:latest
+    networks:
+      - EasyCreater-network
+    
   mysql:
     image: mysql:latest
     # 确保与config.yaml中填写的信息一致
@@ -8,8 +13,6 @@ services:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: demo
       MYSQL_PASSWORD: 123456
-    ports:
-      - "3306:3306"
     networks:
       - EasyCreater-network
 
@@ -29,9 +32,10 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - ./be/config/config.yaml:/config/config.yaml
+      - ./be/config/config.yaml:/EasyCreater/config/config.yaml
     depends_on:
       - mysql
+      - redis
     networks:
       - EasyCreater-network
 

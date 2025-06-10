@@ -5,11 +5,14 @@ import (
 	"demo/dao"
 	"demo/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	easyllm "github.com/soryetong/go-easy-llm"
 	"github.com/soryetong/go-easy-llm/easyai/chatmodule"
 	"github.com/spf13/viper"
+	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 type ResumeRequest struct {
@@ -21,16 +24,47 @@ type AIResponse struct {
 	RequestId string `json:"request_id"`
 }
 
-func QWenNormalChat(c *gin.Context) {
-
-	dao.LoadConfig()
-
-	token := viper.GetString("token")
-
+func CacheResume(c *gin.Context) {
 	var req ResumeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println("error binding JSON:", req)
 		utils.RespFail(c, "Invalid JSON")
+		return
+	}
+	taskID := uuid.New().String()
+	if err := dao.SetResumeCache(taskID, req.ResumeData, 10*time.Minute); err != nil {
+		utils.RespFail(c, "Failed to cache resume's taskID")
+		return
+	}
+	c.JSON(http.StatusOK,
+		gin.H{
+			"data": gin.H{
+				"task_id": taskID,
+			},
+			"status": 200,
+		})
+
+}
+func QWenStreamChat(c *gin.Context) {
+
+	dao.LoadConfig()
+
+	token := viper.GetString("token")
+	taskID := c.Query("task_id")
+	if taskID == "" {
+		c.Header("Content-Type", "text/event-stream")
+		c.Writer.Write([]byte("event: error\n"))
+		c.Writer.Write([]byte("data: Missing task_id\n\n"))
+		c.Writer.Flush()
+		return
+	}
+
+	resumeData, err := dao.GetResumeCache(taskID)
+	if err != nil {
+		c.Header("Content-Type", "text/event-stream")
+		c.Writer.Write([]byte("event: error\n"))
+		c.Writer.Write([]byte("data: Failed to get resume's taskID\n\n"))
+		c.Writer.Flush()
 		return
 	}
 
@@ -46,40 +80,77 @@ func QWenNormalChat(c *gin.Context) {
 
 	config := easyllm.DefaultConfig(token, chatmodule.ChatTypeQWen)
 	client := easyllm.NewChatClient(config).SetGlobalParams(globalParams)
-	resp, err := client.NormalChat(context.Background(), &chatmodule.ChatRequest{
+	stream, err := client.StreamChat(context.Background(), &chatmodule.ChatRequest{
 		Model:   "qwen-plus-2025-01-25",
-		Message: req.ResumeData,
+		Message: resumeData,
 	})
 	if err != nil {
 		log.Println("Error sending chat request:", err)
-		utils.RespFail(c, "Error sending chat request")
+		c.Header("Content-Type", "text/event-stream")
+		c.Writer.Write([]byte("event: error\n"))
+		c.Writer.Write([]byte("data: Error sending chat request\n\n"))
+		c.Writer.Flush()
 		return
 	}
 
-	// 返回建议
-	c.JSON(http.StatusOK, AIResponse{
-		Reply:     resp.Content,
-		RequestId: resp.SessionId,
+	// 设置 SSE 头部
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+	c.Writer.Flush()
+
+	// 启动流式输出
+	c.Stream(func(w io.Writer) bool {
+		select {
+		case msg, ok := <-stream:
+			if !ok {
+				// channel 关闭了，结束流
+				return false
+			}
+			if msg == nil {
+				return true // 继续等待下一条消息
+			}
+			c.SSEvent("", gin.H{
+				"content":    msg.Content,
+				"session_id": msg.SessionId,
+			})
+			return true // 继续监听
+		case <-c.Request.Context().Done():
+			// 客户端断开连接，停止推送
+			return false
+		}
 	})
 
 }
 
-func QWenNormalChatBase(c *gin.Context) {
+func QWenStreamChatBase(c *gin.Context) {
 
 	dao.LoadConfig()
 
 	token := viper.GetString("token")
 
-	var req ResumeRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.RespFail(c, "Invalid JSON")
+	taskID := c.Query("task_id")
+	if taskID == "" {
+		c.Header("Content-Type", "text/event-stream")
+		c.Writer.Write([]byte("event: error\n"))
+		c.Writer.Write([]byte("data: Missing task_id\n\n"))
+		c.Writer.Flush()
+		return
+	}
+
+	resumeData, err := dao.GetResumeCache(taskID)
+	if err != nil {
+		c.Header("Content-Type", "text/event-stream")
+		c.Writer.Write([]byte("event: error\n"))
+		c.Writer.Write([]byte("data: Failed to get resume's taskID\n\n"))
+		c.Writer.Flush()
 		return
 	}
 
 	globalParams := new(chatmodule.QWenParameters)
 	globalParams.Input = &chatmodule.QWenInputMessages{}
 	tipsMsg := &chatmodule.ChatMessage{Role: chatmodule.IdSystem, Content: "你是一个简历助手，你需要提供一些写简历的建议，以帮助我可以做出一份不错的简历。" +
-		"为了保证体验感，请不要输出一切json格式的内容，不要用markdown语法。提出的建议需要详细一些"}
+		"为了保证体验感，请不要输出一切json格式的内容。提出的建议需要详细一些"}
 	globalParams.Input.Messages = append(globalParams.Input.Messages, tipsMsg)
 	globalParams.Parameters = map[string]interface{}{
 		"temperature": 0.8,
@@ -87,7 +158,7 @@ func QWenNormalChatBase(c *gin.Context) {
 		"max_tokens":  1500,
 	}
 
-	Question := req.ResumeData
+	Question := resumeData
 	if Question == "" {
 		Question = "我是一个准备求职的大学生，现在需要写简历，但是我不会写，你能给我提出一些建议吗?"
 	} else {
@@ -97,22 +168,46 @@ func QWenNormalChatBase(c *gin.Context) {
 	log.Printf(Question)
 	config := easyllm.DefaultConfig(token, chatmodule.ChatTypeQWen)
 	client := easyllm.NewChatClient(config).SetGlobalParams(globalParams)
-	resp, err := client.NormalChat(context.Background(), &chatmodule.ChatRequest{
+	stream, err := client.StreamChat(context.Background(), &chatmodule.ChatRequest{
 		Model:   "qwen-plus-2025-01-25",
 		Message: Question,
 	})
 	if err != nil {
 		log.Println("Error sending chat request:", err)
-		utils.RespFail(c, "Error sending chat request")
+		c.Header("Content-Type", "text/event-stream")
+		c.Writer.Write([]byte("event: error\n"))
+		c.Writer.Write([]byte("data: Error sending chat request\n\n"))
+		c.Writer.Flush()
 		return
 	}
 
-	// 返回建议
-	c.JSON(http.StatusOK, AIResponse{
-		Reply:     resp.Content,
-		RequestId: resp.SessionId,
-	})
+	// 设置 SSE 头部
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+	c.Writer.Flush()
 
+	// 启动流式输出
+	c.Stream(func(w io.Writer) bool {
+		select {
+		case msg, ok := <-stream:
+			if !ok {
+				// channel 关闭了，结束流
+				return false
+			}
+			if msg == nil {
+				return true // 继续等待下一条消息
+			}
+			c.SSEvent("", gin.H{
+				"content":    msg.Content,
+				"session_id": msg.SessionId,
+			})
+			return true // 继续监听
+		case <-c.Request.Context().Done():
+			// 客户端断开连接，停止推送
+			return false
+		}
+	})
 }
 
 //func TestQWenStreamChat(t *testing.T) {

@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "waiting for MySQL to start......"
 
-while ! nc -z easycreater-mysql 3306; do 
+while ! nc -z mysql 3306; do 
   sleep 1
 done
 
